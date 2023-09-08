@@ -30,7 +30,7 @@ end
 function Voic:new(num)
   local v = setmetatable({}, { __index = Voic })
   v.num=num  v.mde=1 v.spd=1 v.vol=1 v.bar=8 v.looplay=0 v.busy=0 v.lpcount=1 v.prerec=0 v.pl=0 v.rc=0 v.pfreez=0 v.pg=0
-  v.lpno=1 v.tixx=0 v.prvstp=0 v.plf=0
+  v.lpno=1 v.ofst=0 v.tixx=0 v.prvstp=0 v.plf=0
   v.strt={delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58} 
   v.ennd={delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116} 
   softcut.enable(v.num,1) softcut.buffer(v.num,((v.num-1)%2)+1) softcut.loop(v.num,1) --setup softcut
@@ -91,10 +91,10 @@ function Voic:lninsec(lnth)   --only applicable to stutter(1) and delay(2) modes
 end
 
 function Voic:phas(phs)    --only applicable to stutter(1) and looper(3) modes
-  local ststart,tmpo,lenth,btsprbr;  qtntsec=60.0/params:get("clock_tempo")
-  lenth=(qtntsec)*params:get("V"..self.num.."_Len")  btsprbr=params:get("V"..self.num.."_Bar")
+  local ststart,tmpo,lenth,btsprbr;  qtntsec=60.0/params:get("clock_tempo") ofst=params:get("V"..self.num.."_Ofst")
+  lenth=(qtntsec)*params:get("V"..self.num.."_Len")  btsprbr=params:get("V"..self.num.."_Cyc")
   if self.mde==3 then
-    ststart=self.strt[self.lpno]+(qtntsec*btsprbr*phs)
+    ststart=self.strt[self.lpno]+(qtntsec*ofst)+((qtntsec*(btsprbr-ofst))*phs)
   elseif self.mde==1 then
     local rootphs=self.prvstp
     ststart = self.strt[self.lpno]+(qtntsec*rootphs)+(phs*lenth)
