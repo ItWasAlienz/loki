@@ -213,7 +213,7 @@ m.event = function(data)
         if params:string("clock_source")=="internal" or params:string("clock_source")=="crow" then
             if go>0 then clock.transport.stop() else clock.transport.start() end 
         elseif params:string("clock_source")=="link" then 
-            if go>0 then clock.link.start() else clock.link.stop() end
+            if go>0 then clock.link.stop() else clock.link.start() end
         end tix=0 tixx=-1
       elseif d.val == params:get("PtchPLPgCh") then params:set("PT1",1-params:get("PT1")) 
       elseif d.val == params:get("PtchPRPgCh") then params:set("PT2",1-params:get("PT2")) 
