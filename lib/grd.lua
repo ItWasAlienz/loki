@@ -65,7 +65,7 @@ function grd.key(x,y,z)
         if params:string("clock_source")=="internal" or params:string("clock_source")=="crow" then
           if go>0 then clock.transport.stop() else clock.transport.start() end 
         elseif params:string("clock_source")=="link" then 
-          if go>0 then clock.link.start() else clock.link.stop() end
+          if go>0 then clock.link.stop() else clock.link.start() end
         end tix=0 tixx=-1
           for i=1,6 do voices[i]:rsync() sprklz[i]:go(0) end
       elseif x==(cl-1) then params:set("InMon",1-params:get("InMon"))
@@ -259,16 +259,16 @@ function pag3keyz(x,y,z,rwoffst)
         if (y==(8+rwoffst) and (x<9)) then params:set("V"..vsel.."_In",x) end
       else
         if omod==1 then
-          local btsprbar = params:get("V"..(y-rwoffst-2).."_Bar")
+          local btsprbar = params:get("V"..(y-rwoffst-2).."_Cyc")
           voices[y-rwoffst-2].tixx = ((x + (voices[y-rwoffst-2].pg*16)) % btsprbar)-1
         elseif omod==2 then tixx=x-1 for i=1,6 do voices[i]:rsync() end
         else
-          if lnm[1]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[1]-1)*16)) --check each btz/bar length modifier 1st..
-          elseif lnm[2]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[2]-1)*16))
-          elseif lnm[3]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[3]-1)*16))
-          elseif lnm[4]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[4]-1)*16))
-          elseif lnm[5]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[5]-1)*16))
-          elseif lnm[6]>0 then params:set("V"..(y-rwoffst-2).."_Bar",x+((lnm[6]-1)*16))
+          if lnm[1]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[1]-1)*16)) --check each btz/bar length modifier 1st..
+          elseif lnm[2]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[2]-1)*16))
+          elseif lnm[3]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[3]-1)*16))
+          elseif lnm[4]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[4]-1)*16))
+          elseif lnm[5]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[5]-1)*16))
+          elseif lnm[6]>0 then params:set("V"..(y-rwoffst-2).."_Cyc",x+((lnm[6]-1)*16))
           elseif vmod==1 then                                                       --...if all clear, then go into gameboard
             if sprklz[y-rwoffst-2].busy==0 then sprklz[y-rwoffst-2].xcoord=x sprklz[y-rwoffst-2]:go(1)
               params:set("V"..(y-rwoffst-2).."_Go",1)
@@ -279,8 +279,8 @@ function pag3keyz(x,y,z,rwoffst)
           end
         end
       end
-    elseif (keycount==((y-2-rwoffst)<<2)) then params:set("V"..y-2-rwoffst.."_Bar",x)
-    elseif keycount==((y-2-rwoffst)*100) then params:set("V"..y-2-rwoffst.."_Bar",x+16)
+    elseif (keycount==((y-2-rwoffst)<<2)) then params:set("V"..y-2-rwoffst.."_Cyc",x)
+    elseif keycount==((y-2-rwoffst)*100) then params:set("V"..y-2-rwoffst.."_Cyc",x+16)
     end  
   end
 end           -- [toprow buttons 2-7] + [second-to-toprow 2-4] = grid-shortcut for choose mode(2=st;3=dl;4=lp) 
