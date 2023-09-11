@@ -157,7 +157,7 @@ end
                                          -------------
                                          --TRANSPORT--
 function clock.transport.start() 
-  ply.status=1; go=1; id=clock.run(pop) if params:string("clock_source")=="midi" then tix=1 tixx=0 end
+  ply.status=1; go=1; id=clock.run(pop) if params:string("clock_source")=="midi" then tix=0 tixx=0 end
 end
 
 function clock.transport.stop() ply.status=4; if id~=nil then clock.cancel(id); end go=0; id=nil end
@@ -326,7 +326,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
             elseif params:string("clock_source")=="link" then 
               if go>0 then clock.link.stop() else clock.link.start() end
             end 
-            tix=0 tixx=-1
+            tix=0 tixx=0
               for i=1,6 do voices[i]:rsync() end
           elseif hsel==1 then    --..or clears the buffer region if leftmost dot in top row of voice's screenUI is selected
                 voices[vsel]:clear()
@@ -402,7 +402,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
               if go>0 then clock.transport.stop() else clock.transport.start() end
             elseif params:string("clock_source")=="link" then 
               if go>0 then clock.link.stop() else clock.link.start() end
-            end tix=0 tixx=-1
+            end tix=0 tixx=0
               for i=1,6 do voices[i]:rsync() end
           elseif sel==1 then swuiflag=util.wrap(swuiflag+1,0,2) if swuiflag==1 then swim=params:get("Swng") end
           elseif sel==2 then 
@@ -423,7 +423,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
             elseif params:string("clock_source")=="link" then 
               if go<1 then clock.link.start() end
             end                                                 --while 'tempo' is selected, k3 can reset transport..
-            tix=0 tixx=-1 for i=1,6 do voices[i]:rsync() end --..or reset&start transport if stopped
+            tix=0 tixx=0 for i=1,6 do voices[i]:rsync() end --..or reset&start transport if stopped
           end
         elseif page==2 then
           if spel==-1 then
@@ -431,7 +431,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
               if go>0 then clock.transport.stop() else clock.transport.start() end 
             elseif params:string("clock_source")=="link" then 
               if go>0 then clock.link.stop() else clock.link.start() end
-            end tix=0 tixx=-1
+            end tix=0 tixx=0
               for i=1,6 do voices[i]:rsync() end
           elseif spel==0 then params:set("S"..(spel+1).."_Ply", 1-params:get("S"..(spel+1).."_Ply"))
           elseif spel==1 then params:set("S"..(spel+1).."_Ply", 1-params:get("S"..(spel+1).."_Ply"))
@@ -446,7 +446,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
               if go>0 then clock.transport.stop() else clock.transport.start() end
             elseif params:string("clock_source")=="link" then 
               if go>0 then clock.link.stop() else clock.link.start() end
-            end tix=0 tixx=-1
+            end tix=0 tixx=0
               for i=1,6 do voices[i]:rsync() end
           elseif hsel==2 then voices[vsel].pfreez=1-voices[vsel].pfreez --..freeze params of this voice(to isolate preset changes)..
           elseif hsel>=3 and hsel<6 then --..or toggle playback for the softcut voice if the "•" at top of voice-page is selected..
@@ -487,13 +487,7 @@ end
                                   -- Main triggering clock function --
 function pop()         
   while true do
-    clock.sync(1/4,((1/8)*params:get("Swng"))*swflag)                      tix = tix + 1     -- tix = 1/16th note               
-    xox()                                                     -- xox = function to trigger oneshot/file-sequencer 
-    if ((tix%4)==0) then          
-                                                                           tixx = tixx + 1 -- tixx = 1/4 note
-      fxv(params:get("Fxvc"),params:get("Fxv")) --random-clocked-changes to the 'FX Vortex'('fxv')
-      for i=1,6 do sofxrec(params:get("V"..i.."_Cyc"),i) end                 if rdrw<1 then rdrw=1 end
-    end
+    clock.sync(1/4,((1/8)*params:get("Swng"))*swflag)
     if (tix%2)==0 then                                                                       -- 1/8th note
       sofxvox()                                                           -- sofxvox = function to trigger softcut-voice actions
       if swuiflag==2 then -- if selected to, random-walk 'swing' within range of 'swing width(swidth)'
@@ -501,6 +495,13 @@ function pop()
         params:set("Swng",util.clamp(params:get("Swng")+(math.random(-5,5)*0.01),swim-swdth,swim+swdth)) 
       end
     swflag = 1-swflag end
+    if ((tix%4)==0) then
+      fxv(params:get("Fxvc"),params:get("Fxv")) --random-clocked-changes to the 'FX Vortex'('fxv')
+      for i=1,6 do sofxrec(params:get("V"..i.."_Cyc"),i) end                 if rdrw<1 then rdrw=1 end
+                                                                           tixx = tixx + 1 -- tixx = 1/4 note
+    end
+    xox()                                                     -- xox = function to trigger oneshot/file-sequencer 
+                                                                           tix = tix + 1   -- tix = 1/16th note               
   end
 end
                           ------------------------------------------------
@@ -579,60 +580,60 @@ function stutz(num,typ,tp)
     if i==num then pause[typ]=0 end
   end
 end
-                                  --------------------------------------
-                                  -- Softcut voices playback function --
+                                  ---------------------------------------------
+                                  -- Softcut voices stutter trigger function --
 function sofxvox()
   for i=1,6 do
     if params:get("V"..i.."_Go")>0 then
       local pnabausch=params:get("V"..i.."_Pn") local btsprbar = params:get("V"..i.."_Cyc") local txx = voices[i].tixx
-      local phs=(math.abs((math.random(txx%btsprbar,txx%btsprbar+btsprbar)-(btsprbar*0.5)))/btsprbar)%1
+      local phs=(math.random(0,util.round(btsprbar*0.25,1)) + txx)/btsprbar;
       if pnabausch>0 then softcut.pan(i,(math.random(-50,50)*0.02)*pnabausch) end  --(apply random panning)
       if params:get("V"..i.."_Mod")==3 then                                        -- if in looper mode..
         local imptnz=params:get("V"..i.."_Impatnz")
         if ((params:get("V"..i.."_Rc")==0) and (imptnz~=0) and --..and 'impatient'..
           ((voices[i].lpcount>imptnz) or (voices[i].lpcount<0)) and (voices[i].looplay>0) and (voices[i].busy<1)) then
-          local rndy=math.random(2) local tmp=math.random(5)+1 local num=math.random(24)+8 voices[i].busy=1
+          local rndy=math.random(2) local tmp=math.random(3,12)*2 local num=math.random(8,24) voices[i].busy=1
           clock.run(vstutz,phs,i,rndy,tmp,num) --..improvise automated/randomized playback/stuttering 
   end end end end
 end
                       -- Clocked function for stutters applied on the softcut/looper voices --
-function vstutz(phs,vc,rndy,tmp,num) 
+function vstutz(phs,vc,rndy,tmp,num)
+  local ofst=params:get("V"..vc.."_Ofst") local btsprbr=params:get("V"..vc.."_Cyc")
+  local ntlensc=15/params:get("clock_tempo") 
   for i=1,num do
-    if i>(num/4) then voices[vc].busy=0 phs=math.random(0,7)*0.125
+    if i>=(num-1) then voices[vc].busy=0
     else
       local tymex
-      if ((num>14) and (num<32)) then     --if incoming 'num'>10 do 'geometric series' style of stutter(accel/deccel)..
-        --[[if rndy==2 then tymex=math.pow(((1/tmp)*15)/tempo,1/math.random(4))*(i*0.1)
-        else tymex=math.pow(((1/tmp)*15)/tempo,1/math.random(4))*(((num)-(i-1))*0.1) end ]]--
-        if rndy==2 then tymex = math.pow((1/tmp)*0.2,1.1) else tymex = math.pow(tmp*0.2,0.7) end clock.sleep(tymex)
-      elseif num<15 then                          --..otherwise do a regular stutter
-        if rndy==2 then tymex = 1/tmp else tymex = 1/(tmp*2) end clock.sync(tymex)
+      if ((num>19) and (num<32)) then     --if incoming 'num'>10 do 'geometric series' style of stutter(accel/deccel)..
+        if rndy==2 then tymex = math.pow((1/tmp*2)*ntlensc,1.1) else tymex = math.pow(1/(tmp*3)*ntlensc,0.88) end clock.sleep(tymex)
+      elseif num<20 then                          --..otherwise do a regular stutter
+        if rndy==2 then tymex = 1/tmp*2 else tymex = 1/(tmp*4) end clock.sync(tymex)
       end
     end
     params:set("V"..vc.."_Phase",phs)
   end
 end
-                                  -- Softcut voices recording function --
+                                  -- Softcut voices recording and playback function --
 function sofxrec(btsprbar,i)  --automated control over recording/playback progression of live-looper(or over punch in/out of delay)
-    voices[i].tixx = (voices[i].tixx+1) % btsprbar
-    if poslfoz[i]:get('enabled') == 1 then if math.random(2)>1 then poslfoz[i]:set('period', math.random(8)*lfprmult) end end
-    if params:get("V"..i.."_Mod")==3 then                          --if in looper mode..
-      if voices[i].busy<1 then params:set("V"..i.."_Phase",voices[i].tixx/btsprbar) end
-      if voices[i].tixx == 0 then  --the 'Cyc'('Bar') param is how many beats-per-bar to capture of loop
-        if voices[i].prerec == 2 then params:set("V"..i.."_Rc",1) end   --..count off progression towards loop-capture..
-        if params:get("V"..i.."_Rc")>0 then 
-          if voices[i].prerec>1 then voices[i].prerec=voices[i].prerec-1  --..finish recording..
-          else                                                  
-            voices[i].prerec=voices[i].prerec-1               --..then stop rec and start play..
-            params:set("V"..i.."_Rc",0) params:set("V"..i.."_Phase",0) params:set("V"..i.."_Go",1) 
-          end
-        else 
-          if params:get("V"..i.."_Impatnz")>0 then voices[i].lpcount=voices[i].lpcount+1 end   --..if playing, countoff 'impatienz'
-          if voices[i].looplay>0 then params:set("V"..i.."_Phase",0) params:set("V"..i.."_Go",1) end --restart each new bar
+  voices[i].tixx = (voices[i].tixx%btsprbar) + 1
+  if poslfoz[i]:get('enabled') == 1 then if math.random(2)>1 then poslfoz[i]:set('period', math.random(8)*lfprmult) end end
+  if params:get("V"..i.."_Mod")==3 then                          --if in looper mode..
+    if (voices[i].busy<1) then params:set("V"..i.."_Phase",voices[i].tixx/btsprbar) end
+    if voices[i].tixx == 1 then  --the 'Cyc'('Bar') param is how many beats-per-bar to capture of loop
+      if voices[i].prerec == 2 then params:set("V"..i.."_Rc",1) end   --..count off progression towards loop-capture..
+      if params:get("V"..i.."_Rc")>0 then 
+        if voices[i].prerec>1 then voices[i].prerec=voices[i].prerec-1  --..finish recording..
+        else                                                  
+          voices[i].prerec=voices[i].prerec-1               --..then stop rec and start play..
+          params:set("V"..i.."_Rc",0) params:set("V"..i.."_Phase",0) params:set("V"..i.."_Go",1) 
         end
+      else 
+        if params:get("V"..i.."_Impatnz")>0 then voices[i].lpcount=voices[i].lpcount+1 end   --..if playing, countoff 'impatienz'
+        if voices[i].looplay>0 then params:set("V"..i.."_Phase",0) params:set("V"..i.."_Go",1) end --restart each new bar
       end
-    elseif params:get("V"..i.."_Mod")==2 and params:get("V"..i.."_Go")>0 then   -- elseif in delay mode..
-      params:set("V"..i.."_Rc",util.clamp(math.random(5)-2,0,1)) --random chance of 3/5 that delay turns on every bar
+    end
+  elseif params:get("V"..i.."_Mod")==2 and params:get("V"..i.."_Go")>0 then   -- elseif in delay mode..
+    params:set("V"..i.."_Rc",util.clamp(math.random(5)-2,0,1)) --random chance of 3/5 that delay turns on every bar
   end
 end
                                         ------------------------
