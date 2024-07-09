@@ -1,10 +1,10 @@
 --            loki
 --        summoned by 
---   raja (TheResidentAlien)
+--   raja (ItWasAlienz)
 -- see github for manual:
 -- https://github.com
--- /RajaTheResidentAlien
--- /loki_doc
+--   /ItWasAlienz
+--     /loki_doc
 --
 -- few hints...
 --  enc1 - select pages
@@ -30,9 +30,9 @@ spdvalz={-2,-1.5,-1.2,-1,-0.8,-0.75 -0.5,0,0.333333,0.5,0.75,0.8,1,1.2,1.5,2}
 rezpitchz={44,46,47,49,51,52,55,56,58,59,61,63,64,67,68,70,71,73,75,76}
 fileselect=require('fileselect') scrn=include 'lib/scrn' 
 mutil=require("musicutil") vox=include("loki/lib/voic") grd=include 'lib/grd'
-fildir={_path.audio.."loki/BD/",_path.audio.."loki/SN/",_path.audio.."loki/HH/",_path.audio.."loki/XX/"}
+fildir={_path.audio.."loki/BD/",_path.audio.."loki/SN/",_path.audio.."loki/CY/",_path.audio.."loki/XX/"}
 fildrsel=1 filsel=0 sel=-1 sl=1 spel=1 vsel=1 hsel=-1 edit=0 page=1 uipag=0 spr=0 vpr=0 mpr=0 rdr=0 rdrw=0
-pollf=0 pollr=0 go=0 tix=0 tixx=0 keytog=0 fil=0 tempo=0 sprenum=1 vprenum=1 lrn=0 strb=0
+pollf=0 pollr=0 go=0 tix=0 tixx=0 keytog=0 fil=0 tempo=0 sprenum=1 vprenum=1 lrn=0 strb=0 rndmidi=127
 swuiflag=0 swim=0.0 swflag=0 lfprmult=0.5 prmfreez=0 voices={} for i=1,6 do table.insert(voices,Voic:new(i)) end 
 gridbd={4,4} gridsn={12,4} gridhh={8,8} gridxx={8,12} --1st grid page sizes and starting positions
 selct={1,1,1,1} pause={0,0,0,0} oone=0 onne=0 two=0 twoo=0 --file-'sel'(index), stutter-busy('pause's) and double-press flags
@@ -43,6 +43,7 @@ files = {} seq =        --files/sequencer vals for 4-piece kit(4 voices of 'Play
   {0,0,0,1,0,1,0,0,1,0,1,0,0,1,1,0,0,0,0,1,0,3,0,0,1,0,1,0,0,5,2,0,0,0,0,1,0,1,0,0,3,0,1,0,0,1,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,1,1,0}}
 
 function init()
+  out_midi = midi.connect(1)
   pollf = poll.set("amp_in_l") pollr = poll.set("amp_in_r")   --setup polls
   pchlf = poll.set("pitch_in_l") pchrt = poll.set("pitch_in_r")
   for i=1,4 do files[i]=util.scandir(fildir[i])  engine.flex(i-1,fildir[i]..files[i][1]) end--register file directories & load files
@@ -488,20 +489,26 @@ end
 function pop()         
   while true do
     clock.sync(1/4,((1/8)*params:get("Swng"))*swflag)
-    if (tix%2)==0 then                                                                       -- 1/8th note
+    if (tix%2)==0 then                                                    -- 1/8th note
+      out_midi:note_on(40,rndmidi,1)
       sofxvox()                                                           -- sofxvox = function to trigger softcut-voice actions
       if swuiflag==2 then -- if selected to, random-walk 'swing' within range of 'swing width(swidth)'
         local swdth=params:get("Swdth")
         params:set("Swng",util.clamp(params:get("Swng")+(math.random(-5,5)*0.01),swim-swdth,swim+swdth)) 
       end
-    swflag = 1-swflag end
-    if ((tix%4)==0) then
-      fxv(params:get("Fxvc"),params:get("Fxv")) --random-clocked-changes to the 'FX Vortex'('fxv')
-      for i=1,6 do sofxrec(params:get("V"..i.."_Cyc"),i) end                 if rdrw<1 then rdrw=1 end
-                                                                           tixx = tixx + 1 -- tixx = 1/4 note
+    swflag = 1-swflag
+    else  
+      out_midi:note_on(40,0,1) 
+      out_midi:note_off(40,127,1) 
     end
-    xox()                                                     -- xox = function to trigger oneshot/file-sequencer 
-                                                                           tix = tix + 1   -- tix = 1/16th note               
+    if ((tix%4)==0) then
+      rndmidi = math.random(24,127)
+      fxv(params:get("Fxvc"),params:get("Fxv")) --random-clocked-changes to the 'FX Vortex'('fxv')
+      for i=1,6 do sofxrec(params:get("V"..i.."_Cyc"),i) end  tixx = tixx + 1 -- tixx = 1/4 note
+    end
+                                                              if rdrw<1 then rdrw=1 end
+    xox()                                 -- xox = function to trigger oneshot/file-sequencer 
+                                                              tix = tix + 1 -- tix = 1/16th NOTE
   end
 end
                           ------------------------------------------------
