@@ -50,7 +50,7 @@ Engine_Loki : CroneEngine {
 			var trigz=T2A.ar(\tryg.tr);
 			var amp = EnvGen.ar(Env.adsr(0.001,0.3,0.7,rls*(BufDur.kr(bnum)-0.1)),trigz,doneAction:2);
 			var awesomeness=LPF.ar(PlayBuf.ar(2,bnum,BufRateScale.kr(bnum)*spd,trigz,pos,0),6969,1.4)*amp;
-			Out.ar([fxo,out],Pan2.ar(MoogFF.ar(awesomeness.softclip,fcoff,2.8),pn,lvl));
+			Out.ar([fxo,out],Pan2.ar(MoogFF.ar(awesomeness,fcoff,1.5),pn,lvl));
 		}).add;
 		
 		/*SynthDef("awx",
@@ -133,7 +133,7 @@ Engine_Loki : CroneEngine {
 			xtra = msg[5]; if(xtra>0, {ot=smokefx[xtra-1];},{ot=mastering;});
       rzr = Synth("Rezor", 
       [\out,ot,\freq,val,\amp,gn,\rngz,md1,\fxindx,smokefx[md2],\noff,fxroute[0].asMap], //eventually, can i change these .asMap..
-      target:fxg);                                                                        //...assignments dynamically?
+      target:fxg);                                                    //...assignments dynamically?
 		});
 		
 		this.addCommand("rzset", "iff", { arg msg;
