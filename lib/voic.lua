@@ -37,7 +37,6 @@ function Voic:new(num)
   softcut.rec_level(v.num,1.0)  softcut.level(v.num,1.0) softcut.rate(v.num,1.0) softcut.pan(v.num,(v.num%2)*2-1) 
   softcut.level_input_cut(((v.num-1)%2+1),v.num,1.0) softcut.fade_time(v.num,0.002) softcut.pan_slew_time(v.num,0.05)
   softcut.rate_slew_time(v.num,0.01) softcut.level_slew_time(v.num,0.01) softcut.recpre_slew_time(v.num,0.01)
-  v.strt[1]=delmap(v.num)+58.0 v.ennd[1]=delmap(v.num)+116.0 
   return v
 end
 
@@ -45,7 +44,8 @@ end
 function Voic:mode(mde) -- mode1 = stutter, mode2 = delay(echo), mode3 = looper
   local ststrt, stend, lenth; lenth=params:get("V"..self.num.."_Len")
   self.prvmde = self.mde self.lpcount=0 self.mde = mde ststrt,stend=strtnd(self.num,lenth)
-  if self.mde==3 then softcut.rec(self.num,0) softcut.loop(self.num,0)
+  if self.mde==3 then 
+    softcut.rec(self.num,0) softcut.loop(self.num,1) softcut.position(self.num,self.strt[self.lpno])
   else
     softcut.loop(self.num,1) 
     if self.mde==1 then self.prvstp=self.tixx params:set("V"..self.num.."_Phase",0.0) end
@@ -55,7 +55,7 @@ function Voic:mode(mde) -- mode1 = stutter, mode2 = delay(echo), mode3 = looper
 end
 
 function Voic:go(ply) -- play
-  local ststart=strtnd(self.num,params:get("V"..self.num.."_Len")) self.pl = ply
+  local ststart,ennd=strtnd(self.num,params:get("V"..self.num.."_Len")) self.pl = ply
   if self.mde == 3 then self.looplay=ply self.lpcount=1 end softcut.position(self.num,ststart) 
   if self.mde ~= 2 then softcut.play(self.num,self.pl) else softcut.play(self.num,1) end
 end
@@ -113,9 +113,9 @@ function Voic:speed(spd) self.spd = spd softcut.rate(self.num,self.spd) end
 function Voic:gain(vol) self.vol = vol softcut.level(self.num,self.vol) end
 
 function Voic:clear()
-  if self.num<3 then softcut.buffer_clear_region_channel(self.num,0,116,0.01,0.0) 
-  elseif ((self.num>2) and (self.num<5)) then softcut.buffer_clear_region_channel(self.num-2,116,232,0.01,0.0)
-  else softcut.buffer_clear_region_channel(self.num-4,232,348,0.01,0.0) end
+  if self.num<3 then softcut.buffer_clear_region_channel(self.num,0,116,0.001,0.0) 
+  elseif ((self.num>2) and (self.num<5)) then softcut.buffer_clear_region_channel(self.num-2,116,232,0.001,0.0)
+  else softcut.buffer_clear_region_channel(self.num-4,232,348,0.001,0.0) end
 end
 
 function Voic:inputselect(inz, itbl)
