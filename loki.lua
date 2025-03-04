@@ -158,10 +158,15 @@ end
                                          -------------
                                          --TRANSPORT--
 function clock.transport.start() 
-  ply.status=1; go=1; id=clock.run(pop) if params:string("clock_source")=="midi" then tix=0 tixx=0 end
+  ply.status=1; go=1; id=clock.run(pop) 
+  if params:string("clock_source")=="midi" or params:string("clock_source")=="link" then tix=0 tixx=0 end
+  if params:string("clock_source")=="link" then clock.link.start() end
 end
 
-function clock.transport.stop() ply.status=4; if id~=nil then clock.cancel(id); end go=0; id=nil end
+function clock.transport.stop() ply.status=4; 
+  if id~=nil then clock.cancel(id); end go=0; id=nil 
+  if params:string("clock_source")=="link" then clock.link.stop() end
+end
                                           ------------
 function enc(n,d)                         --ENCODERS--
   if n==1 then                                --enc1 switches pages(unless softcut page's 'cycles' param is selected)
