@@ -163,8 +163,8 @@ function clock.transport.start()
   if params:string("clock_source")=="link" then clock.link.start() end
 end
 
-function clock.transport.stop() ply.status=4; 
-  if id~=nil then clock.cancel(id); end go=0; id=nil 
+function clock.transport.stop() 
+  if id~=nil then clock.cancel(id); end go=0; ply.status=4; id=nil 
   if params:string("clock_source")=="link" then clock.link.stop() end
 end
                                           ------------
