@@ -163,8 +163,8 @@ function clock.transport.start()
   if params:string("clock_source")=="link" then clock.link.start() end
 end
 
-function clock.transport.stop() 
-  if id~=nil then clock.cancel(id); end go=0; ply.status=4; id=nil 
+function clock.transport.stop() ply.status=4; 
+  if id~=nil then clock.cancel(id); end go=0; id=nil 
   if params:string("clock_source")=="link" then clock.link.stop() end
 end
                                           ------------
@@ -325,7 +325,9 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
           elseif spel<4 then edit=1-edit --k2-up switches to edit-sequencer
           else fil=1-fil end
         else                                                        --softcut/alternate page
-          if hsel==-1 then vpwrit("V_"..vprenum..".lki") --WARNING:WITH SoftCut-PAGE PRESET SELECTED, K2 SAVES FILE!
+          if hsel==-1 then
+            for i=1,6 do params:set("V"..i.."_Mod", params:get("V"..i.."_Mod")) end --safety measure 2 reset positions, etc. before..
+            vpwrit("V_"..vprenum..".lki") --WARNING:WITH SoftCut-PAGE PRESET SELECTED, K2 SAVES FILE!
           elseif hsel==0 then
             if params:string("clock_source")=="internal" or params:string("clock_source")=="crow" then
               if go>0 then clock.transport.stop() else clock.transport.start() end
@@ -470,7 +472,7 @@ function key(n,z)         --made this flagging system for double-key-combo to pr
           elseif hsel==16 then 
                 poslfoz[vsel]:set('max', util.round((voices[vsel].ennd[voices[vsel].lpno]%58)/58.0,0.0001))
                 poslfoz[vsel]:set('min', util.round((voices[vsel].strt[voices[vsel].lpno]%58)/58.0,0.0001))
-                voices[vsel].plf=util.wrap(voices[vsel].plf+1,0,3) poslfoz[vsel]:set('depth', 1.0) --previously was necessary to reset..
+                voices[vsel].plf=util.wrap(voices[vsel].plf+1,0,3) poslfoz[vsel]:set('depth', 1.0) --previously was needed to reset..
                 if voices[vsel].plf == 0 then poslfoz[vsel]:stop()      --..depth everytime; this may be fixed now(unnecessary?)
                 elseif voices[vsel].plf == 1 then poslfoz[vsel]:set('shape', 'random') lfprmult=0.25 poslfoz[vsel]:start()  
                 elseif voices[vsel].plf == 2 then poslfoz[vsel]:set('shape', 'saw') lfprmult=0.75 poslfoz[vsel]:start()
@@ -493,7 +495,7 @@ end
                                   -- Main triggering clock function --
 function pop()         
   while true do
-    clock.sync(1/4,((1/8)*params:get("Swng"))*swflag)
+    clock.sync(0.25,(0.25*params:get("Swng"))*swflag)
     if (tix%2)==0 then                                                    -- 1/8th note
       out_midi:note_on(40,rndmidi,1)
       sofxvox()                                                           -- sofxvox = function to trigger softcut-voice actions
@@ -501,7 +503,7 @@ function pop()
         local swdth=params:get("Swdth")
         params:set("Swng",util.clamp(params:get("Swng")+(math.random(-5,5)*0.01),swim-swdth,swim+swdth)) 
       end
-    swflag = 1-swflag
+      swflag = 1-swflag
     else  
       out_midi:note_on(40,0,1) 
       out_midi:note_off(40,127,1) 
@@ -511,8 +513,8 @@ function pop()
       fxv(params:get("Fxvc"),params:get("Fxv")) --random-clocked-changes to the 'FX Vortex'('fxv')
       for i=1,6 do sofxrec(params:get("V"..i.."_Cyc"),i) end  tixx = tixx + 1 -- tixx = 1/4 note
     end
+    xox()                                   -- xox = function to trigger oneshot/file-sequencer
                                                               if rdrw<1 then rdrw=1 end
-    xox()                                 -- xox = function to trigger oneshot/file-sequencer 
                                                               tix = tix + 1 -- tix = 1/16th NOTE
   end
 end
@@ -628,7 +630,7 @@ end
                                   -- Softcut voices recording and playback function --
 function sofxrec(btsprbar,i)  --automated control over recording/playback progression of live-looper(or over punch in/out of delay)
   voices[i].tixx = (voices[i].tixx%btsprbar) + 1
-  if poslfoz[i]:get('enabled') == 1 then if math.random(2)>1 then poslfoz[i]:set('period', math.random(8)*lfprmult) end end
+  if poslfoz[i]:get('enabled') == 1 then if math.random(2)>1 then poslfoz[i]:set('period', math.random(2,16)*lfprmult) end end
   if params:get("V"..i.."_Mod")==3 then                          --if in looper mode..
     if (voices[i].busy<1) then params:set("V"..i.."_Phase",voices[i].tixx/btsprbar) end
     if voices[i].tixx == 1 then  --the 'Cyc'('Bar') param is how many beats-per-bar to capture of loop
