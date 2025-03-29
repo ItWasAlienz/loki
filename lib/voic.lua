@@ -2,7 +2,7 @@ Voic = {} -- class for organizing softcut voice into 'modes' of operation(stutte
 
 audio.level_eng_cut(1.0) audio.level_adc_cut(1.0) ampll=0 -- ampll extends 'hysteresis'..
 function pllpset(pll) ampll=pll if ampll<1 then clock.run(pollpaus,params:get("ATr")) params:set("ATr",1) end end
-function pollpaus(art) clock.sleep(0.1) params:set("ATr",art) end --..by setting amp-detection threshold, for 100ms,..
+function pollpaus(art) clock.sleep(0.04) params:set("ATr",art) end --..by setting amp-detection threshold, for 40ms,..
    --..at a value too high for detection(1), before going back to normal/specified threshold(to reduce false triggers)
 
 function delmap(num) return math.floor((num-1)/2)*116.0 end --'delay map': maps voice numbers to time in buffer for that..
@@ -78,7 +78,7 @@ function Voic:rec(rc) -- record
   else if self.rc>0 then pllpset(1) end softcut.rec(self.num,1) softcut.rec_level(self.num,self.rc) end
 end
 
-function Voic:length(lnth)   --only applicable to stutter(1) and delay(2) modes
+function Voic:length(lnth)   --only applicable to looper(3) mode
   local str,nd=strtnd(self.num,lnth)
   softcut.loop_start(self.num,str) softcut.loop_end(self.num,nd)
 end
