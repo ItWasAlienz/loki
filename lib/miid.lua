@@ -76,41 +76,53 @@ params:set_action("SPre", function(spre) spread("S_"..spre..".lki") end) --    "
 params:add_number("VPre", "VPreset",1,500,1)
 params:set_action("VPre", function(vpre) vpread("V_"..vpre..".lki") end) --    ""
 params:add_group("PgCh_Grp","MIDIProgChAssign_Group",77)  --
-params:add_number("MPrePgChD", "MPrePrgChDown", 0, 127, 12) -- Master-pre program change up
-params:add_number("MPrePgChU", "MPrePrgChUp", 0, 127, 13) -- Master-pre program change up
-params:add_number("SPrePgChD", "SPrePrgChDown", 0, 127, 10) -- S-Pag-pre program change down
-params:add_number("SPrePgChU", "SPrePrgChUp", 0, 127, 11)  -- S-Page-pre program change up
-params:add_number("SPreActivePgCh", "SPreActivePrgCh", 0, 127, 15)  --make S-page program changes active
-params:add_number("VPrePgChD", "VPrePrgChDown", 0, 127, 20)  -- etc...
-params:add_number("VPrePgChU", "VPrePrgChUp", 0, 127, 21)
-params:add_number("VPreActivePgCh", "VPreActivePrgCh", 0, 127, 17)  
-params:add_number("InputPgCh", "InputMonitorPrgCh", 0, 127, 18)     --input-monitor toggle
-params:add_number("FreezePgCh", "FreezePrgCh", 0, 127, 19)          --freeze tempo-related params(S-Page)
-params:add_number("TransprtPgCh", "TransportPrgCh", 0, 127, 14)              --transport play on/off
-params:add_number("RestartPgCh", "RestartPrgCh", 0, 127, 30)        --restart transport(w/out off)
-params:add_number("DelRevPgCh", "DelayReverbPrgCh", 0, 127, 4)      --toggle random delay/reverb
-params:add_number("FXVPgCh", "FXVortexPrgCh", 0, 127, 5)            --toggle FX Vortex on/off
-params:add_number("PtchPLPgCh", "PitchPollLeftPrgCh", 0, 127, 6)    --activate left-input pitch-poll
-params:add_number("PtchPRPgCh", "PitchPollRightPrgCh", 0, 127, 7)   --activate right-input pitch-poll
-params:add_number("PtchPRzPgCh", "PitchPollRezPrgCh", 0, 127, 8) --apply pitch-poll(whichever's active) to rezon8r pitch
+params:add_number("MPrePgChD", "MPrePrgChDown", 0, 127, 0) -- Master-pre program change up
+params:add_number("MPrePgChU", "MPrePrgChUp", 0, 127, 0) -- Master-pre program change up
+params:add_number("SPrePgChD", "SPrePrgChDown", 0, 127, 6) -- S-Pag-pre program change down
+params:add_number("SPrePgChU", "SPrePrgChUp", 0, 127, 7)  -- S-Page-pre program change up
+params:add_number("SPreActivePgCh", "SPreActivePrgCh", 0, 127, 0)  --make S-page program changes active
+params:add_number("VPrePgChD", "VPrePrgChDown", 0, 127, 9)  -- etc...
+params:add_number("VPrePgChU", "VPrePrgChUp", 0, 127, 10)
+params:add_number("VPreActivePgCh", "VPreActivePrgCh", 0, 127, 0)  
+params:add_number("InputPgCh", "InputMonitorPrgCh", 0, 127, 5)     --input-monitor toggle
+params:add_number("FreezePgCh", "FreezePrgCh", 0, 127, 0)          --freeze tempo-related params(S-Page)
+params:add_number("TransprtPgCh", "TransportPrgCh", 0, 127, 1)              --transport play on/off
+params:add_number("RestartPgCh", "RestartPrgCh", 0, 127, 0)        --restart transport(w/out off)
+params:add_number("DelRevPgCh", "DelayReverbPrgCh", 0, 127, 2)      --toggle random delay/reverb
+params:add_number("FXVPgCh", "FXVortexPrgCh", 0, 127, 4)            --toggle FX Vortex on/off
+params:add_number("PtchPLPgCh", "PitchPollLeftPrgCh", 0, 127, 0)    --activate left-input pitch-poll
+params:add_number("PtchPRPgCh", "PitchPollRightPrgCh", 0, 127, 0)   --activate right-input pitch-poll
+params:add_number("PtchPRzPgCh", "PitchPollRezPrgCh", 0, 127, 0) --apply pitch-poll(whichever's active) to rezon8r pitch
 
 for i=1,4 do
-  params:add_number("S"..i.."_PlyPgCh", "S"..i.."_PlayPrgCh",0,127,22+i) 
+  params:add_number("S"..i.."_PlyPgCh", "S"..i.."_PlayPrgCh",0,127,0) 
   params:add_number("S"..i.."_RlnPgCh", "S"..i.."_RandomLengthPrgCh",0,127,109+i)
-  params:add_number("S"..i.."_DflPgCh", "S"..i.."_DrunkFileWalkPrgCh",0,127,114+i)
+  params:add_number("S"..i.."_DflPgCh", "S"..i.."_DrunkFileWalkPrgCh",0,127,0)
 end
 
 for i=1,6 do                                                                                        --SoftCut Voices 1 thru 6
-  params:add_number("V"..i.."PreFreezePgCh", "V"..i.."PreFreezePrgCh", 0, 127, (10*i)+29)  --freeze params per-voice
-  params:add_number("V"..i.."RecPgCh", "V"..i.."RecPrgCh", 0, 127, (10*i)+30)                --
-  params:add_number("V"..i.."GoPgCh", "V"..i.."GoPrgCh", 0, 127, (10*i)+31)
-  params:add_number("V"..i.."Amp2LnPgCh", "V"..i.."Amp2LengthPrgCh", 0, 127, (10*i)+33)     --applying polls...
-  params:add_number("V"..i.."Ptch2LnPgCh", "V"..i.."Pitch2LengthPrgCh", 0, 127, (10*i)+34)
-  params:add_number("V"..i.."_LpNumPgChU", "V"..i.."_LoopNumPrgChUp",0,127,(10*i)+37)
-  params:add_number("V"..i.."_LpNumPgChD", "V"..i.."_LoopNumPrgChDown",0,127,(10*i)+38)
-  params:add_number("V"..i.."Amp2PosPgCh", "V"..i.."Amp2PositionPrgCh", 0, 127, (10*i)+35)
-  params:add_number("V"..i.."Amp2SpdPgCh", "V"..i.."Amp2SpeedPrgCh", 0, 127, (10*i)+36)
-  params:add_number("V"..i.."AmpRecPgCh", "V"..i.."Amp2RecPrgCh", 0, 127, (10*i)+39)
+  params:add_number("V"..i.."PreFreezePgCh", "V"..i.."PreFreezePrgCh", 0, 127, 0)  --freeze params per-voice
+  if (i==1) then 
+    params:add_number("V"..i.."RecPgCh", "V"..i.."RecPrgCh", 0, 127, 11+i)
+    params:add_number("V"..i.."GoPgCh", "V"..i.."GoPrgCh", 0, 127, 10+i)
+    params:add_number("V"..i.."_LpNumPgChU", "V"..i.."_LoopNumPrgChUp",0,127,16+i)
+    params:add_number("V"..i.."_LpNumPgChD", "V"..i.."_LoopNumPrgChDown",0,127,15+i)
+  elseif (i==3) then
+    params:add_number("V"..i.."RecPgCh", "V"..i.."RecPrgCh", 0, 127, 12+i)
+    params:add_number("V"..i.."GoPgCh", "V"..i.."GoPrgCh", 0, 127, 11+i)
+    params:add_number("V"..i.."_LpNumPgChU", "V"..i.."_LoopNumPrgChUp",0,127,17+i)
+    params:add_number("V"..i.."_LpNumPgChD", "V"..i.."_LoopNumPrgChDown",0,127,16+i)
+  else 
+    params:add_number("V"..i.."RecPgCh", "V"..i.."RecPrgCh", 0, 127, 0)
+    params:add_number("V"..i.."GoPgCh", "V"..i.."GoPrgCh", 0, 127, 0)
+    params:add_number("V"..i.."_LpNumPgChU", "V"..i.."_LoopNumPrgChUp",0,127,0)
+    params:add_number("V"..i.."_LpNumPgChD", "V"..i.."_LoopNumPrgChDown",0,127,0)
+  end
+  params:add_number("V"..i.."Amp2LnPgCh", "V"..i.."Amp2LengthPrgCh", 0, 127, 0)     --applying polls...
+  params:add_number("V"..i.."Ptch2LnPgCh", "V"..i.."Pitch2LengthPrgCh", 0, 127, 0)
+  params:add_number("V"..i.."Amp2PosPgCh", "V"..i.."Amp2PositionPrgCh", 0, 127, 0)
+  params:add_number("V"..i.."Amp2SpdPgCh", "V"..i.."Amp2SpeedPrgCh", 0, 127, 0)
+  params:add_number("V"..i.."AmpRecPgCh", "V"..i.."Amp2RecPrgCh", 0, 127, 0)
 end
 
 params:bang() --other params exist in other files, but are instantiated first, bang here at the end
@@ -166,7 +178,7 @@ m.event = function(data)
           elseif params:get("V"..i.."_Mod")==2 then                          --Mode 2 = Delay
             params:set("V"..i.."_Go",1-params:get("V"..i.."_Go"))   --k2 turns delay on/off
           else      --Mode 3 = Live Looper; k2 sets recording to start at beginning of next cycle...
-            voice[i].prerec=2                     --..then stop-recording and start-play at cycle after that
+            voices[i].prerec=2                     --..then stop-recording and start-play at cycle after that
           end
         elseif d.val == params:get("V"..i.."GoPgCh") then params:set("V"..i.."_Go",1-params:get("V"..i.."_Go"))
         elseif d.val == params:get("V"..i.."Amp2LnPgCh") then params:set("V"..i.."_ALn",1-params:get("V"..i.."_ALn"))
