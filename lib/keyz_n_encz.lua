@@ -348,5 +348,5 @@ end
 function callback(file_path)      --when 'fileselect' returns, process directory accordingly
   fildir[fildrsel]=_path.audio..string.sub(file_path,21,string.match(file_path, "^.*()/")) --store dirs
   files[fildrsel]=util.scandir(fildir[fildrsel]) filsel=0 --load names of files in dir to file-table/vox
-  params:add_control("S"..fildrsel.."_Fil","S"..fildrsel.."_File", controlspec.new(1,#files[fildrsel],'lin',1,1,'ndx',0.01,true))
+  params:lookup_param("S"..fildrsel.."_Fil").controlspec.maxval = #files[fildrsel]
 end
