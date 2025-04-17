@@ -1,12 +1,7 @@
 --Vox(softcut)-page parameters
-lfoz=require('lfo') poslfoz={}
 
 for i=1,6 do
-  local itbl={} local indx=1 local modez={"St","Dl","Lp"}  
-    
-  poslfoz[i] = lfoz.new() poslfoz[i]:set('shape', 'saw') poslfoz[i]:set('min', 0.0) poslfoz[i]:set('max', 1.0)
-  poslfoz[i]:set('depth', 1.0) poslfoz[i]:set('mode', 'clocked') poslfoz[i]:set('period', 3) poslfoz[i]:set('ppqn', 48)
-  poslfoz[i]:set('action', function(scld,raw) params:set("V"..i.."_Phase",util.round(scld,0.0001)) end)
+  local itbl={} local indx=1 local modez={"St","Dl","Lp"} local lfostatz={"Off","Sin","Tri","Up","Dwn","Sqr","Rnd"}
 
   params:add_group("V"..i.."_Grp","V"..i.."_Group",28)
   params:add_number("V"..i.."_Go","V"..i.."_Play",0,1,0)
@@ -37,17 +32,38 @@ for i=1,6 do
   params:add_number("V"..i.."_Ofst","V"..i.."_LoopOffset",0,31,0)
   params:set_action("V"..i.."_Ofst", function(ofst) voices[i].ofst = ofst end)
   params:add_number("V"..i.."_Cyc","V"..i.."_CycleLength",1,32,8)
+  params:add_number("V"..i.."_CtOff","V"..i.."_CutOff",20,20000,1000)
+  params:set_action("V"..i.."_CtOff", function(ctoff) voices[i]:cutoff(ctoff) end)
+  params:add_number("V"..i.."_BndWdt","V"..i.."_BandWidth",0.5,14,10)
+  params:set_action("V"..i.."_BndWdt", function(rq) voices[i]:bndwidth(rq) end)
   params:add_number("V"..i.."_ARc","V"..i.."AmpTrigRec",0,1,1)
   params:add_number("V"..i.."_ALn","V"..i.."AmpTrigLen",0,1,0)
   params:add_number("V"..i.."_PLn","V"..i.."PitchTrigLen",0,1,0)
   params:add_number("V"..i.."_APs","V"..i.."AmpTrigPos",0,1,0)
   params:add_number("V"..i.."_ASp","V"..i.."AmpTrigSpd",0,1,0)
+  params:add{type = "option", id = "V"..i.."_PLFO", name = "V"..i.."_PositionLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:poslfo(stat) end}
+  params:add{type = "option", id = "V"..i.."_LLFO", name = "V"..i.."_LengthLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:lenlfo(stat) end}
+  params:add{type = "option", id = "V"..i.."_SLFO", name = "V"..i.."_SpeedLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:spdlfo(stat) end}
+  params:add{type = "option", id = "V"..i.."_FLFO", name = "V"..i.."_FeedbackLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:fbklfo(stat) end}
+  params:add{type = "option", id = "V"..i.."_CLFO", name = "V"..i.."_CutoffLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:flclfo(stat) end}
+  params:add{type = "option", id = "V"..i.."_QLFO", name = "V"..i.."_BandWidthLFO", options = lfostatz, default = 1,
+    action = function(stat) voices[i]:flqlfo(stat) end}
   
   for j=1,6 do if i==j then else itbl[indx]=j indx=indx+1 end end
   params:add{type = "option", id = "V"..i.."_In", name = "V"..i.."_Input",
   options = {"En","I1","I2","V"..itbl[1],"V"..itbl[2],"V"..itbl[3],"V"..itbl[4],"V"..itbl[5]}, default = 1,
   action = function(inz) voices[i]:inputselect(inz, itbl) end}
-  poslfoz[i]:add_params('pos_lfo'..i, 'position'..i, 'LFO'..i)
+  poslfoz[i]:add_params('pos_lfo'..i, 'position'..i, 'PosLFO'..i)
+  lenlfoz[i]:add_params('len_lfo'..i, 'length'..i, 'LenLFO'..i)
+  spdlfoz[i]:add_params('spd_lfo'..i, 'speed'..i, 'SpdLFO'..i)
+  fbklfoz[i]:add_params('fbk_lfo'..i, 'feedback'..i, 'FbkLFO'..i)
+  flclfoz[i]:add_params('flc_lfo'..i, 'filtcutoff'..i, 'FCLFO'..i)
+  flqlfoz[i]:add_params('flq_lfo'..i, 'filtwidth'..i, 'FQLFO'..i)
 end
 
 function vpwrit(nam)
@@ -63,6 +79,13 @@ function vpwrit(nam)
     wriitab["V"..i.."_ALn"]=params:get("V"..i.."_ALn") wriitab["V"..i.."_PLn"]=params:get("V"..i.."_PLn")
     wriitab["V"..i.."_APs"]=params:get("V"..i.."_APs") wriitab["V"..i.."_ASp"]=params:get("V"..i.."_ASp")
     wriitab["V"..i.."_Lns"]=params:get("V"..i.."_Lns") wriitab["V"..i.."_ARc"]=params:get("V"..i.."_ARc")
+    wriitab["V"..i.."_CtOff"]=params:get("V"..i.."_CtOff") wriitab["V"..i.."_BndWdt"]=params:get("V"..i.."_BndWdt")
+    wriitab["V"..i.."_PLFO"]=params:get("V"..i.."_PLFO") wriitab["PosLFORate"..i]=poslfoz[i]:get('period') 
+    wriitab["V"..i.."_LLFO"]=params:get("V"..i.."_LLFO") wriitab["LenLFORate"..i]=lenlfoz[i]:get('period')
+    wriitab["V"..i.."_SLFO"]=params:get("V"..i.."_SLFO") wriitab["SpdLFORate"..i]=spdlfoz[i]:get('period') 
+    wriitab["V"..i.."_FLFO"]=params:get("V"..i.."_FLFO") wriitab["FbkLFORate"..i]=fbklfoz[i]:get('period')
+    wriitab["V"..i.."_CLFO"]=params:get("V"..i.."_CLFO") wriitab["FltCLFORate"..i]=flclfoz[i]:get('period') 
+    wriitab["V"..i.."_QLFO"]=params:get("V"..i.."_QLFO") wriitab["FltQLFORate"..i]=flqlfoz[i]:get('period')
   end
   tab.save(wriitab,_path.data.."loki/"..nam)
 end
@@ -78,9 +101,16 @@ function vpread(nam)
       params:set("V"..i.."_Phase", reeadtab["V"..i.."_Phase"]) params:set("V"..i.."_Spd", reeadtab["V"..i.."_Spd"])
       params:set("V"..i.."_Pn", reeadtab["V"..i.."_Pn"]) params:set("V"..i.."_Vol", reeadtab["V"..i.."_Vol"])
       params:set("V"..i.."_Ofst", reeadtab["V"..i.."_Ofst"]) params:set("V"..i.."_LpNum", reeadtab["V"..i.."_LpNum"])
+      params:set("V"..i.."_CtOff", reeadtab["V"..i.."_CtOff"]) params:set("V"..i.."_BndWdt", reeadtab["V"..i.."_BndWdt"])
       params:set("V"..i.."_Cyc", reeadtab["V"..i.."_Cyc"]) params:set("V"..i.."_In", reeadtab["V"..i.."_In"])
       params:set("V"..i.."_ALn", reeadtab["V"..i.."_ALn"]) params:set("V"..i.."_PLn", reeadtab["V"..i.."_PLn"])
       params:set("V"..i.."_APs", reeadtab["V"..i.."_APs"]) params:set("V"..i.."_ASp", reeadtab["V"..i.."_ASp"])
       params:set("V"..i.."_Lns", reeadtab["V"..i.."_Lns"]) params:set("V"..i.."_ARc", reeadtab["V"..i.."_ARc"])
+      params:set("V"..i.."_PLFO", reeadtab["V"..i.."_PLFO"]) poslfoz[i]:set('period', reeadtab["PosLFORate"..i]) 
+      params:set("V"..i.."_LLFO", reeadtab["V"..i.."_LLFO"]) lenlfoz[i]:set('period', reeadtab["LenLFORate"..i])
+      params:set("V"..i.."_SLFO", reeadtab["V"..i.."_SLFO"]) spdlfoz[i]:set('period', reeadtab["SpdLFORate"..i]) 
+      params:set("V"..i.."_FLFO", reeadtab["V"..i.."_FLFO"]) fbklfoz[i]:set('period', reeadtab["FbkLFORate"..i])
+      params:set("V"..i.."_CLFO", reeadtab["V"..i.."_CLFO"]) flclfoz[i]:set('period', reeadtab["FltCLFORate"..i]) 
+      params:set("V"..i.."_QLFO", reeadtab["V"..i.."_QLFO"]) flqlfoz[i]:set('period', reeadtab["FltQLFORate"..i])
       end
 end end end
