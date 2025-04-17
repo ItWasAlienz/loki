@@ -41,7 +41,7 @@ function redraw()
       screen.stroke()
     end 
   elseif page==2 then seqpg(spel)
-  else softcutv(vsel,hsel) end ply:redraw() screen.update() rdrw=0
+  else if lfop>0 then lfopag(lsel,psel,vsel) else softcutv(vsel,hsel) end end ply:redraw() screen.update() rdrw=0
 end
 
 function seqpg(slct)
@@ -72,7 +72,9 @@ function seqpg(slct)
 end
 
 function softcutv(vs,hs)
-  local countess=voices[vs].tixx hilite(hs,-1) mcs(11,58,11,58,(vpr*0.5)+0.5)
+  local countess=voices[vs].tixx 
+  screen.level(1) screen.rect(101,34,16,7) screen.close() screen.fill() screen.stroke()
+  hilite(hs,-1) mcs(11,58,11,58,(vpr*0.5)+0.5)
   screen.font_size(8) screen.move(15,60) screen.text("Preset#")
   screen.font_size(10) screen.move(51,61) screen.text(vprenum) screen.font_size(8)
   hilite(hs,1) mcs(24,11,24,11,0.5) hilite(hs,2) screen.rect(27,7,8,9) screen.move(29,14) 
@@ -82,23 +84,61 @@ function softcutv(vs,hs)
     hilite(hs,4) screen.move(58,13) screen.text(params:string("V"..vs.."_In")) --input
   hilite(hs,5) screen.font_size(10) screen.move(69,14) screen.text(params:string("V"..vs.."_Mod")) hilite(hs,6) --mode
   if(params:get("V"..vs.."_Mod")<3) then mcs(2,20,2,20,params:get("V"..vs.."_ALn")*0.5+0.5) end --AmplitudePoll2Length
-  hilite(hs,7) if(params:get("V"..vs.."_Mod")<3) then mcs(2,25,2,25,params:get("V"..vs.."_PLn")*0.5+0.5) end --PtchPoll2Lngth
+  hilite(hs,7) if(params:get("V"..vs.."_Mod")<3) then mcs(2,24,2,24,params:get("V"..vs.."_PLn")*0.5+0.5) end --PtchPoll2Lngth
   hilite(hs,8) screen.move(5,25) screen.font_size(8) --Length/Impatienz
   if(params:get("V"..vs.."_Mod")<3) then mtmt(5,24,"Length:",40,24,params:get("V"..vs.."_Len"))
   else mtmt(5,24,"Impatienz:",50,24,params:get("V"..vs.."_Impatnz")) end hilite(hs,9) 
   if params:get("V"..vs.."_Mod")==3 then 
     mtmt(5,32,"Lp#:",27,32,params:get("V"..vs.."_LpNum")) 
   elseif params:get("V"..vs.."_Mod")==1 then 
-    mcs(2,32,2,32,params:get("V"..vs.."_APs")*0.5+0.5) mtmt(5,32,"Phase:",5,32,params:get("V"..vs.."_Phase"))
+    mcs(2,30,2,30,params:get("V"..vs.."_APs")*0.5+0.5) mtmt(5,32,"Phase:",40,32,params:get("V"..vs.."_Phase"))
   end 
   hilite(hs,10) mtmt(5,40,"FdBk:",27,40,params:get("V"..vs.."_Fbk"))
   hilite(hs,11) mcs(2,45,2,45,params:get("V"..vs.."_ASp")*0.5+0.5) mtmt(5,48,"Speed:",35,48,params:get("V"..vs.."_Spd"))
-  hilite(hs,12) mtmt(65,26,"Pan:",83,26,params:get("V"..vs.."_Pn"))
-  hilite(hs,13) mtmt(65,35,"Vol:",80,35,params:get("V"..vs.."_Vol"))
-  hilite(hs,14) mtmt(50,44,"Btz/Cyc:",50,44,"") screen.font_size(15) screen.move(72,58) screen.font_face(8)
+  hilite(hs,12) mtmt(69,26,"Pan:",88,26,params:get("V"..vs.."_Pn"))
+  hilite(hs,13) mtmt(69,35,"Vol:",85,35,params:get("V"..vs.."_Vol"))
+  hilite(hs,14) mtmt(60,44,"Btz/Cyc:",60,44,"") screen.font_size(15) screen.move(72,58) screen.font_face(8)
   screen.text(params:get("V"..vs.."_Ofst").."/"..countess.."/"..params:get("V"..vs.."_Cyc")) screen.font_face(1) screen.font_size(8)
-  hilite(hs,15) screen.move(100,32) screen.text("APRc:") mcs(123,30,123,30,params:get("V"..vs.."_ARc")*0.5+0.5)
-  hilite(hs,16) screen.move(100,40) screen.text("LFO:") mcs(119,38,119,38,0.5+voices[vs].plf)
+  hilite(hs,15) screen.move(103,32) screen.text("APRc:") mcs(125,30,125,30,params:get("V"..vs.."_ARc")*0.5+0.5)
+  if hs==16 then screen.level(15) else screen.level(5) end screen.move(103,40) screen.text("LFO")
+end
+
+function lfopag(ls,ps,vs)
+  screen.font_size(11) screen.level(1) screen.font_face(69)
+  screen.rect(19,10,63,12) screen.close() screen.fill() screen.stroke()
+  screen.move(22,20) screen.level(15) screen.text("Voice"..vs.."_LFOs") screen.font_size(8) screen.font_face(101)
+  screen.level(15) screen.move(8,30) screen.text("Pos") screen.move(29,30) screen.text("Len")
+  screen.move(49,30) screen.text("Spd") screen.move(70,30) screen.text("Fbk")
+  screen.move(91,30) screen.text("CF") screen.move(111,30) screen.text("BW")
+  screen.font_size(8) screen.font_face(8)
+  for i=1,6 do
+    screen.move((i*20)-11, 40)
+    if i==1 then 
+       if lsel==1 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_PLFO"))
+    elseif i==2 then 
+       if lsel==2 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_LLFO"))
+    elseif i==3 then 
+       if lsel==3 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_SLFO"))
+    elseif i==4 then 
+       if lsel==4 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_FLFO"))
+    elseif i==5 then
+       if lsel==5 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_CLFO"))
+    else if lsel==6 and psel==1 then screen.level(15) else screen.level(8) end screen.text(params:string("V"..vs.."_QLFO")) end
+  end
+  for i=1,6 do
+    screen.move((i*20)-15, (i%2)*10+50)
+    if i==1 then 
+       if lsel==1 and psel==2 then screen.level(15) else screen.level(8) end screen.text(poslfoz[vs]:get('period'))
+    elseif i==2 then 
+       if lsel==2 and psel==2 then screen.level(15) else screen.level(8) end screen.text(lenlfoz[vs]:get('period'))
+    elseif i==3 then 
+       if lsel==3 and psel==2 then screen.level(15) else screen.level(8) end screen.text(spdlfoz[vs]:get('period'))
+    elseif i==4 then 
+       if lsel==4 and psel==2 then screen.level(15) else screen.level(8) end screen.text(fbklfoz[vs]:get('period'))
+    elseif i==5 then
+       if lsel==5 and psel==2 then screen.level(15) else screen.level(8) end screen.text(flclfoz[vs]:get('period'))
+    else if lsel==6 and psel==2 then screen.level(15) else screen.level(8) end screen.text(flqlfoz[vs]:get('period')) end
+  end
 end
 
 function mcs(x,y,cx,cy,cw) screen.move(x,y) screen.circle(cx,cy,cw) screen.stroke() end
