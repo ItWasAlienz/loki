@@ -9,8 +9,12 @@ the custom preset system was designed especially to be able to incorporate foot-
 With these features in place, the app facilitates usage from practice, to song-structuring, all the way to stage performance.
 
 ### Installation instructions:
-1) from within maiden/matron type `;install https://github.com/ItWasAlienz/loki`
-2) loki comes with audio files which you'll need to move to your norns's 'audio' folder. after completing the previously mentioned `install` directive(watch the 'matron' terminal readout for when it says 'installed "loki"!'), you can then move these files to the appropriate 'audio' folder by typing the following into maiden/matron: 
-`os.execute('mv '.._path.code.."loki/lokiaud ".._path.audio)`
+1) from within maiden/matron type:
+   
+        ;install https://github.com/ItWasAlienz/loki 
+2) loki comes with audio files which you'll need to move to your norns's 'audio' folder. 
+after completing the previously mentioned `install` directive(watch the 'matron' terminal readout for when it says 'installed "loki"!'), you can then move these files to the appropriate 'audio' folder by typing the following into maiden/matron:
+  
+        os.execute('mv '.._path.code.."loki/lokiaud ".._path.audio)
 
-after doing this, the 'lokiaud' folder will then be located within your norns 'audio' folder(if installing from a web-browser, you may need to refresh to see the change), and you can then start the app and begin playing :)
+after doing this, the 'lokiaud' folder will then be located within your norns 'audio' folder(if installing from a web-browser, you may need to refresh to see the change), and you can then start the app and begin playing 🔊 🥰
