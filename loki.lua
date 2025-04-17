@@ -31,7 +31,7 @@ rezpitchz={44,46,47,49,51,52,55,56,58,59,61,63,64,67,68,70,71,73,75,76}
 fileselect=require('fileselect') scrn=include 'lib/scrn' 
 mutil=require("musicutil") vox=include("loki/lib/voic") grd=include 'lib/grd' 
 kne=include 'lib/keyz_n_encz' 
-if (util.file_exists(_path.audio.."common/808/808-BD.wav") == true) then
+if (util.file_exists(_path.audio.."lokiaud") == true) then
 fildir={_path.audio.."lokiaud/BD/",_path.audio.."lokiaud/SN/",_path.audio.."lokiaud/HH/",_path.audio.."lokiaud/XX/"} 
 else fildir={0,0,0,0}
 end
