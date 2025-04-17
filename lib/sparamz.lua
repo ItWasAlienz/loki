@@ -8,9 +8,36 @@ for i=1,4 do
   params:add_number("S"..i.."_Dfl", "S"..i.."_DrunkFileWalk",0,1,0) params:add_number("S"..i.."_Sln", "S"..i.."_SeqLengthDiff",-63,0,0)
   params:add_number("S"..i.."_Svl", "S"..i.."_SeqTrackVolume",0.0,4.0,1.4) 
   if fildir[i] ~= 0 then 
-    params:add_number("S"..i.."_Fil", "S"..i.."_File",1,#files[i],1)
+      params:add{
+      type = 'control',
+      id = "S"..i.."_Fil",
+      name = "S"..i.."_File",
+      controlspec = controlspec.def{
+        min = 1,
+        max = #files[i],
+        warp = 'lin',
+        step = 1,
+        default = 1,
+        units = 'n',
+        quantum = 0.01}
+      }
+      --params:add_number("S"..i.."_Fil", "S"..i.."_File",1,#files[i],1)
     params:set_action("S"..i.."_Fil", function(fil) if (fil ~= nil) then selct[i]=fil engine.flex(i-1,fildir[i]..files[i][selct[i]]) end end)
-    else params:add_number("S"..i.."_Fil", "S"..i.."_File",1,256,1) end
+    else
+      params:add{
+      type = 'control',
+      id = "S"..i.."_Fil",
+      name = "S"..i.."_File",
+      controlspec = controlspec.def{
+        min = 1,
+        max = 256,
+        warp = 'lin',
+        step = 1,
+        default = 1,
+        units = 'n',
+        quantum = 0.01}
+      }  
+    end
 end
 params:add_group("PtcnFX_Grp","PitchAndFX_Group",8)
 params:add_number("S_PRz", "PitchTrackRezonator",0,1,0)
