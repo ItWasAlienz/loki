@@ -18,4 +18,4 @@ after completing the previously mentioned `install` directive(watch the 'matron'
   
         os.execute('mv '.._path.code.."loki/lokiaud ".._path.audio)
 
-after doing this, the 'lokiaud' folder will then be located within your norns 'audio' folder(if installing from a web-browser, you may need to refresh to see the change), and you can then start the app and begin playing 🔊 🥰
+after doing this, the REPL should display "true	exit	0" to indicate success, and 'lokiaud' folder will then be located within your norns 'audio' folder(if installing from a web-browser, you may need to refresh to see the change). You can then start the app and begin playing 🔊 🥰
