@@ -30,7 +30,7 @@ spdvalz={-2,-1.5,-1.2,-1,-0.8,-0.75 -0.5,0,0.333333,0.5,0.75,0.8,1,1.2,1.5,2}
 rezpitchz={44,46,47,49,51,52,55,56,58,59,61,63,64,67,68,70,71,73,75,76}
 fileselect=require('fileselect') scrn=include 'lib/scrn' 
 mutil=require("musicutil") vox=include("loki/lib/voic") grd=include 'lib/grd'
-fildir={_path.audio.."lokiaud/BD/",_path.audio.."lokiaud/SN/",_path.audio.."lokiaud/CY/",_path.audio.."lokiaud/XX/"}
+fildir={_path.audio.."lokiaud/BD/",_path.audio.."lokiaud/SN/",_path.audio.."lokiaud/HH/",_path.audio.."lokiaud/XX/"}
 fildrsel=1 filsel=0 sel=-1 sl=1 spel=1 vsel=1 hsel=-1 edit=0 page=1 uipag=0 spr=0 vpr=0 mpr=0 rdr=0 rdrw=0
 pollf=0 pollr=0 go=0 tix=0 tixx=0 keytog=0 fil=0 tempo=0 sprenum=1 vprenum=1 lrn=0 strb=0 rndmidi=127
 swuiflag=0 swim=0.0 swflag=0 lfprmult=0.5 prmfreez=0 voices={} for i=1,6 do table.insert(voices,Voic:new(i)) end 
