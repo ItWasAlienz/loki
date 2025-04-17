@@ -11,3 +11,5 @@ Installation instructions:
 1) from within maiden/matron type `;install https://github.com/ItWasAlienz/loki`
 2) loki comes with audio files which you'll need to move to audio folder. after completing the previously mentioned `install` directive(watch the 'matron' terminal readout for when it says 'installed "loki"!'), you can then move these files by typing the following
 into maiden/matron: `os.execute('mv '.._path.code.."loki/lokiaud ".._path.audio)`
+
+after doing this, the 'lokiaud' folder will then be located within your norns 'audio' folder(if installing from a web-browser, you may need to refresh to see the change), and you can then start the app :)
