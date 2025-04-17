@@ -10,6 +10,4 @@ With these features in place, the app facilitates usage, from practice, to song-
 Installation instructions:
 1) from within maiden/matron type `;install https://github.com/ItWasAlienz/loki`
 2) loki comes with audio files which you'll need to move to audio folder, you can do so after typing the previously mentioned `install` directive, by then typing the following
-into maiden/matron: 
-
-
+into maiden/matron: `os.execute('mv '.._path.code.."loki/lokiaud ".._path.audio)`
