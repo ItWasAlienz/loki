@@ -32,7 +32,7 @@ fileselect=require('fileselect') scrn=include 'lib/scrn'
 mutil=require("musicutil") vox=include("loki/lib/voic") grd=include 'lib/grd' 
 kne=include 'lib/keyz_n_encz' 
 if (util.file_exists(_path.audio.."common/808/808-BD.wav") == true) then
-fildir={_path.audio.."common/808/",_path.audio.."common/808/",_path.audio.."common/808/",_path.audio.."common/808/"} 
+fildir={_path.audio.."lokiaud/BD/",_path.audio.."lokiaud/SN/",_path.audio.."lokiaud/HH/",_path.audio.."lokiaud/XX/"} 
 else fildir={0,0,0,0}
 end
 fildrsel=1 filsel=0 sel=-1 sl=1 spel=1 vsel=1 hsel=-1 lsel=1 psel=1 lfop=0 edit=0 page=1 uipag=0 spr=0 vpr=0 mpr=0 
