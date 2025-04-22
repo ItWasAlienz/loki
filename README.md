@@ -1,6 +1,6 @@
 # **LOKI** 
 ### was summoned by raja (aka 'ItWasAlienz')
-Loki is an app designed to be a practice instrument, a song-writing tool, and a performance instrument all in one. 
+Loki is an app designed to be a practice instrument, a song-writing tool, and a performance instrument all in one, specifically designed around live-input sampling. 
 The xox sequencer has features to make a steady beat grow irregular in various ways so that you can use it as an advanced metronome to practice to. 
 The softcut layer is used for live-sampling in a choice of three modes: 'Stutter', 'Delay', and 'Looper'. 
 Softcut voices can be routed into each other as well(so that you can record loops, feed them into stutters and delays, or pump the inputs through multiple delays, etc.).
