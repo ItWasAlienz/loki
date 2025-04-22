@@ -32,7 +32,7 @@ for i=1,6 do
   params:add_number("V"..i.."_Ofst","V"..i.."_LoopOffset",0,31,0)
   params:set_action("V"..i.."_Ofst", function(ofst) voices[i].ofst = ofst end)
   params:add_number("V"..i.."_Cyc","V"..i.."_CycleLength",1,32,8)
-  params:add_number("V"..i.."_CtOff","V"..i.."_CutOff",20,20000,1000)
+  params:add_control("V"..i.."_CtOff","V"..i.."_CutOff",controlspec.new(20,20000,'log',10,1000,'freq',10))
   params:set_action("V"..i.."_CtOff", function(ctoff) voices[i]:cutoff(ctoff) end)
   params:add_number("V"..i.."_BndWdt","V"..i.."_BandWidth",0.5,14,10)
   params:set_action("V"..i.."_BndWdt", function(rq) voices[i]:bndwidth(rq) end)
@@ -41,23 +41,60 @@ for i=1,6 do
   params:add_number("V"..i.."_PLn","V"..i.."PitchTrigLen",0,1,0)
   params:add_number("V"..i.."_APs","V"..i.."AmpTrigPos",0,1,0)
   params:add_number("V"..i.."_ASp","V"..i.."AmpTrigSpd",0,1,0)
+  
+  params:add_control("V"..i.."_FDry", "V"..i.."FilterDry",controlspec.new(0.0,1.0,'lin',0.001,1,'amp',0.001))
+  params:set_action("V"..i.."_FDry", function(fdr) voices[i]:fdry(fdr) end)
+  params:add_control("V"..i.."_FLoP", "V"..i.."FilterLowPass",controlspec.new(0.0,1.0,'lin',0.001,0,'amp',0.001))
+  params:set_action("V"..i.."_FLoP", function(flp) voices[i]:flowp(flp) end)
+  params:add_control("V"..i.."_FHiP", "V"..i.."FilterHighPass",controlspec.new(0.0,1.0,'lin',0.001,0,'amp',0.001))
+  params:set_action("V"..i.."_FHiP", function(fhp) voices[i]:fhighp(fhp) end)
+  params:add_control("V"..i.."_FBnP", "V"..i.."FilterBandPass",controlspec.new(0.0,1.0,'lin',0.001,0,'amp',0.001))
+  params:set_action("V"..i.."_FBnP", function(fbp) voices[i]:fbandp(fbp) end)
+  params:add_control("V"..i.."_FBnR", "V"..i.."FilterBandReject",controlspec.new(0.0,1.0,'lin',0.001,0,'amp',0.001))
+  params:set_action("V"..i.."_FBnR", function(fbr) voices[i]:fbandr(fbr) end)
+  
   params:add{type = "option", id = "V"..i.."_PLFO", name = "V"..i.."_PositionLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:poslfo(stat) end}
+  params:add_number("V"..i.."_PLFMin","V"..i.."PosLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_PLFMin", function(mn) poslfoz[i]:set('min',(mn*0.1)) end)
+  params:add_number("V"..i.."_PLFMax","V"..i.."PosLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_PLFMax", function(mx) poslfoz[i]:set('max',mx) end)
   params:add{type = "option", id = "V"..i.."_LLFO", name = "V"..i.."_LengthLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:lenlfo(stat) end}
+  params:add_number("V"..i.."_LLFMin","V"..i.."LenLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_LLFMin", function(mn) lenlfoz[i]:set('min',(mn*48)) end)
+  params:add_number("V"..i.."_LLFMax","V"..i.."LenLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_LLFMax", function(mx) lenlfoz[i]:set('max',(mx*48)) end)
   params:add{type = "option", id = "V"..i.."_SLFO", name = "V"..i.."_SpeedLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:spdlfo(stat) end}
+  params:add_number("V"..i.."_SLFMin","V"..i.."SpdLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_SLFMin", function(mn) spdlfoz[i]:set('min',(mn*4)-2) end)
+  params:add_number("V"..i.."_SLFMax","V"..i.."SpdLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_SLFMax", function(mx) spdlfoz[i]:set('max',(mx*4)-2) end)
   params:add{type = "option", id = "V"..i.."_FLFO", name = "V"..i.."_FeedbackLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:fbklfo(stat) end}
+  params:add_number("V"..i.."_FLFMin","V"..i.."FbkLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_FLFMin", function(mn) fbklfoz[i]:set('min',mn) end)
+  params:add_number("V"..i.."_FLFMax","V"..i.."FbkLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_FLFMax", function(mx) fbklfoz[i]:set('max',mx) end)
   params:add{type = "option", id = "V"..i.."_CLFO", name = "V"..i.."_CutoffLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:flclfo(stat) end}
+  params:add_number("V"..i.."_CLFMin","V"..i.."FlCLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_CLFMin", function(mn) flclfoz[i]:set('min',(mn*20000)+20) end)
+  params:add_number("V"..i.."_CLFMax","V"..i.."FlCLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_CLFMax", function(mx) flclfoz[i]:set('max',(mx*20000)+20) end)
   params:add{type = "option", id = "V"..i.."_QLFO", name = "V"..i.."_BandWidthLFO", options = lfostatz, default = 1,
     action = function(stat) voices[i]:flqlfo(stat) end}
+  params:add_number("V"..i.."_QLFMin","V"..i.."FlQLFOMin",0.0,1.0,0.0)
+  params:set_action("V"..i.."_QLFMin", function(mn) flqlfoz[i]:set('min',(mn*13.5)+0.5) end)
+  params:add_number("V"..i.."_QLFMax","V"..i.."FlQLFOMax",0.0,1.0,0.0)
+  params:set_action("V"..i.."_QLFMax", function(mx) flqlfoz[i]:set('max',(mx*13.5)+0.5) end)
   
-  for j=1,6 do if i==j then else itbl[indx]=j indx=indx+1 end end
+  for j=1,6 do if i~=j then itbl[indx]=j indx=indx+1 end end
   params:add{type = "option", id = "V"..i.."_In", name = "V"..i.."_Input",
-  options = {"En","I1","I2","V"..itbl[1],"V"..itbl[2],"V"..itbl[3],"V"..itbl[4],"V"..itbl[5]}, default = 1,
+  options = {"I1","I2","V"..itbl[1],"V"..itbl[2],"V"..itbl[3],"V"..itbl[4],"V"..itbl[5],"En"}, default = 1,
   action = function(inz) voices[i]:inputselect(inz, itbl) end}
+
   poslfoz[i]:add_params('pos_lfo'..i, 'position'..i, 'PosLFO'..i)
   lenlfoz[i]:add_params('len_lfo'..i, 'length'..i, 'LenLFO'..i)
   spdlfoz[i]:add_params('spd_lfo'..i, 'speed'..i, 'SpdLFO'..i)
@@ -80,6 +117,9 @@ function vpwrit(nam)
     wriitab["V"..i.."_APs"]=params:get("V"..i.."_APs") wriitab["V"..i.."_ASp"]=params:get("V"..i.."_ASp")
     wriitab["V"..i.."_Lns"]=params:get("V"..i.."_Lns") wriitab["V"..i.."_ARc"]=params:get("V"..i.."_ARc")
     wriitab["V"..i.."_CtOff"]=params:get("V"..i.."_CtOff") wriitab["V"..i.."_BndWdt"]=params:get("V"..i.."_BndWdt")
+    wriitab["V"..i.."_FDry"]=params:get("V"..i.."_FDry") wriitab["V"..i.."_FLoP"]=params:get("V"..i.."_FLoP")
+    wriitab["V"..i.."_FHiP"]=params:get("V"..i.."_FHiP") wriitab["V"..i.."_FBnP"]=params:get("V"..i.."_FBnP")
+    wriitab["V"..i.."_FBnR"]=params:get("V"..i.."_FBnR")
     wriitab["V"..i.."_PLFO"]=params:get("V"..i.."_PLFO") wriitab["PosLFORate"..i]=poslfoz[i]:get('period') 
     wriitab["V"..i.."_LLFO"]=params:get("V"..i.."_LLFO") wriitab["LenLFORate"..i]=lenlfoz[i]:get('period')
     wriitab["V"..i.."_SLFO"]=params:get("V"..i.."_SLFO") wriitab["SpdLFORate"..i]=spdlfoz[i]:get('period') 
@@ -106,6 +146,9 @@ function vpread(nam)
       params:set("V"..i.."_ALn", reeadtab["V"..i.."_ALn"]) params:set("V"..i.."_PLn", reeadtab["V"..i.."_PLn"])
       params:set("V"..i.."_APs", reeadtab["V"..i.."_APs"]) params:set("V"..i.."_ASp", reeadtab["V"..i.."_ASp"])
       params:set("V"..i.."_Lns", reeadtab["V"..i.."_Lns"]) params:set("V"..i.."_ARc", reeadtab["V"..i.."_ARc"])
+      params:set("V"..i.."_FDry", reeadtab["V"..i.."_FDry"]) params:set("V"..i.."_FLoP", reeadtab["V"..i.."_FLoP"])
+      params:set("V"..i.."_FHiP", reeadtab["V"..i.."_FHiP"]) params:set("V"..i.."_FBnP", reeadtab["V"..i.."_FBnP"])
+      params:set("V"..i.."_FBnR", reeadtab["V"..i.."_FBnR"])
       params:set("V"..i.."_PLFO", reeadtab["V"..i.."_PLFO"]) poslfoz[i]:set('period', reeadtab["PosLFORate"..i]) 
       params:set("V"..i.."_LLFO", reeadtab["V"..i.."_LLFO"]) lenlfoz[i]:set('period', reeadtab["LenLFORate"..i])
       params:set("V"..i.."_SLFO", reeadtab["V"..i.."_SLFO"]) spdlfoz[i]:set('period', reeadtab["SpdLFORate"..i]) 
