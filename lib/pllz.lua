@@ -3,8 +3,8 @@ pchlf = poll.set("pitch_in_l") pchrt = poll.set("pitch_in_r")
 
 pollf.callback = function(val)                                          --poll left                    
   for i=1,6 do                                                    
-    if params:get("AT1")>0 then              --"ampll" is an attempt to extend 'hysteresis'..  
-      if val>params:get("ATr") and ampll<1 then
+    if params:get("AT1")>0 then                
+      if val>params:get("ATr") and ampll<1 then     --"ampll" is an attempt to extend 'hysteresis'..
         if params:get("V"..i.."_ARc")>0 then          --..for less chance of false-retrigger(see voic.lua)
           if params:get("V"..i.."_Mod")==3 then 
             voices[i].prerec=2 params:set("AT1",0) 
@@ -12,7 +12,7 @@ pollf.callback = function(val)                                          --poll l
         end
         if params:get("V"..i.."_ALn")>0 then
           if params:get("V"..i.."_Mod")==3 then voices[i].prerec=2 voices[i].lpcount=1 
-          else params:set("V"..i.."_Len",(math.random(64)*2)*0.0078125) end 
+          else params:set("V"..i.."_Len",(math.random(64)*2)*0.0078125) end             --minimum of 1/128th note
         end
         if params:get("V"..i.."_APs")>0 then
           if params:get("V"..i.."_Mod")==3 then 
@@ -37,7 +37,7 @@ pollr.callback = function(val)                                          --poll r
         if params:get("V"..i.."_ALn")>0 then
           if params:get("V"..i.."_Mod")==3 then 
             voices[i].prerec=2 voices[i].lpcount=1 params:set("AT2",0)
-          else params:set("V"..i.."_Len",(math.random(64)*2)*0.0078125) end  --minimum of 1/128th note
+          else params:set("V"..i.."_Len",(math.random(64)*2)*0.0078125) end  
         end
         if params:get("V"..i.."_APs")>0 then
           if params:get("V"..i.."_Mod")==3 then 
