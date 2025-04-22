@@ -2,7 +2,7 @@
 function enc(n,d)                         --ENCODERS--
   if n==1 then                                --enc1 switches pages(unless softcut page's 'cycles' param is selected)
     if page==3 and hsel==14 then params:set("V"..vsel.."_Ofst", params:get("V"..vsel.."_Ofst")+d)
-    elseif page==3 and lfop>0 then lsel = util.wrap(lsel+d,1,7)
+    elseif page==3 and lfop>0 then lsel = util.wrap(lsel+d,0,13)
       else page=util.wrap(page+d,1,3) end         
   elseif n==2 then
     if page==1 then               --page1 = main page(one-shot drums played back from supercollider + timing/presets)
@@ -21,8 +21,14 @@ function enc(n,d)                         --ENCODERS--
       if params:get("V"..vsel.."_Mod")==3 then
         if d>0 then if hsel==5 then hsel=8 else hsel=util.wrap(hsel+d,-1,16) end
           elseif d<0 then if hsel==7 then hsel=5 else hsel=util.wrap(hsel+d,-1,16) end end
-        else if lfop>0 then psel=util.wrap(psel+d,1,2) 
-          else hsel=util.wrap(hsel+d,-1,16) end end --on softcut page, enc2 selects params
+        else if (lfop>0) then 
+          if (lsel~=12) then 
+            psel=util.wrap(psel+d,1,4) 
+            else            --on lfo page enc2 varies between setting filter cutoff or vertically selecting params
+            params:set("V"..vsel.."_CtOff",util.clamp(params:get("V"..vsel.."_CtOff")+d*200,20,20000)) 
+          end 
+        else hsel=util.wrap(hsel+d,-1,16) end --on softcut page, enc2 selects params
+      end 
       --if hsel==0 then ply.active=true else ply.active=false end
     end
   elseif n==3 then              --enc3 changes parameter values(or edits chosen step in sequencer)
@@ -103,24 +109,58 @@ function enc(n,d)                         --ENCODERS--
         params:set("V"..vsel.."_Cyc",util.clamp(params:get("V"..vsel.."_Cyc")+d,1,32))
       elseif hsel==16 then
         if lfop>0 then
-          if lsel==1 then 
+          if lsel==0 then
+            vsel=util.wrap(vsel+d,1,6)
+          elseif lsel==1 then 
             if psel==1 then params:set("V"..vsel.."_PLFO",util.wrap(params:get("V"..vsel.."_PLFO")+d,1,7))
-              else poslfoz[vsel]:set('period',util.round(poslfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif psel==2 then poslfoz[vsel]:set('period',util.round(poslfoz[vsel]:get('period')+(d*0.125),0.125))
+            elseif psel==3 then params:set("V"..vsel.."_PLFMax",params:get("V"..vsel.."_PLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_PLFMin",params:get("V"..vsel.."_PLFMin")+(d*0.04))
+            end
           elseif lsel==2 then
             if psel==1 then params:set("V"..vsel.."_LLFO",util.wrap(params:get("V"..vsel.."_LLFO")+d,1,7))
-              else lenlfoz[vsel]:set('period',util.round(lenlfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif psel==2 then lenlfoz[vsel]:set('period',util.round(lenlfoz[vsel]:get('period')+(d*0.125),0.125))
+            elseif psel==3 then params:set("V"..vsel.."_LLFMax",params:get("V"..vsel.."_LLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_LLFMin",params:get("V"..vsel.."_LLFMin")+(d*0.04))
+            end
           elseif lsel==3 then
             if psel==1 then params:set("V"..vsel.."_SLFO",util.wrap(params:get("V"..vsel.."_SLFO")+d,1,7))
-              else spdlfoz[vsel]:set('period',util.round(spdlfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif psel==2 then spdlfoz[vsel]:set('period',util.round(spdlfoz[vsel]:get('period')+(d*0.125),0.125)) 
+            elseif psel==3 then params:set("V"..vsel.."_SLFMax",params:get("V"..vsel.."_SLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_SLFMin",params:get("V"..vsel.."_SLFMin")+(d*0.04))
+            end
           elseif lsel==4 then
             if psel==1 then params:set("V"..vsel.."_FLFO",util.wrap(params:get("V"..vsel.."_FLFO")+d,1,7))
-              else fbklfoz[vsel]:set('period',util.round(fbklfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif psel==2 then fbklfoz[vsel]:set('period',util.round(fbklfoz[vsel]:get('period')+(d*0.125),0.125))
+            elseif psel==3 then params:set("V"..vsel.."_FLFMax",params:get("V"..vsel.."_FLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_FLFMin",params:get("V"..vsel.."_FLFMin")+(d*0.04))
+            end
           elseif lsel==5 then
             if psel==1 then params:set("V"..vsel.."_CLFO",util.wrap(params:get("V"..vsel.."_CLFO")+d,1,7))
-              else flclfoz[vsel]:set('period',util.round(flclfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif psel==2 then flclfoz[vsel]:set('period',util.round(flclfoz[vsel]:get('period')+(d*0.125),0.125))
+            elseif psel==3 then params:set("V"..vsel.."_CLFMax",params:get("V"..vsel.."_CLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_CLFMin",params:get("V"..vsel.."_CLFMin")+(d*0.04))
+            end
           elseif lsel==6 then
             if psel==1 then params:set("V"..vsel.."_QLFO",util.wrap(params:get("V"..vsel.."_QLFO")+d,1,7))
-              else flqlfoz[vsel]:set('period',util.round(flqlfoz[vsel]:get('period')+(d*0.125),0.125)) end
+            elseif pset==2 then flqlfoz[vsel]:set('period',util.round(flqlfoz[vsel]:get('period')+(d*0.125),0.125))
+            elseif psel==3 then params:set("V"..vsel.."_QLFMax",params:get("V"..vsel.."_QLFMax")+(d*0.04))
+            else params:set("V"..vsel.."_QLFMin",params:get("V"..vsel.."_QLFMin")+(d*0.04))
+            end
+          elseif lsel==7 then
+            params:set("V"..vsel.."_FDry",util.clamp(params:get("V"..vsel.."_FDry")+(d*0.01),0,1))
+          elseif lsel==8 then
+            params:set("V"..vsel.."_FLoP",util.clamp(params:get("V"..vsel.."_FLoP")+(d*0.01),0,1))
+          elseif lsel==9 then
+            params:set("V"..vsel.."_FHiP",util.clamp(params:get("V"..vsel.."_FHiP")+(d*0.01),0,1))
+          elseif lsel==10 then
+            params:set("V"..vsel.."_FBnP",util.clamp(params:get("V"..vsel.."_FBnP")+(d*0.01),0,1))
+          elseif lsel==11 then
+            params:set("V"..vsel.."_FBnR",util.clamp(params:get("V"..vsel.."_FBnR")+(d*0.01),0,1))
+          elseif lsel==12 then
+            params:set("V"..vsel.."_CtOff",util.clamp(params:get("V"..vsel.."_CtOff")+d*5,20,20000))
+          elseif lsel==13 then
+            params:set("V"..vsel.."_BndWdt",util.clamp(params:get("V"..vsel.."_BndWdt")+(d*0.1),0.5,14))
           end
         else lfop = util.wrap(lfop+d,0,1)
         end
