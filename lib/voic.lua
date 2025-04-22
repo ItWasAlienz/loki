@@ -3,10 +3,6 @@ lfoz=require('lfo') poslfoz={} lenlfoz={} spdlfoz={} fbklfoz={} flclfoz={} flqlf
 for i=1,6 do
   poslfoz[i] = lfoz.new('saw',0.0,1.0,1.0,'clocked',3,function(scld,raw) params:set("V"..i.."_Phase",util.round(raw,0.00001)) end) 
   poslfoz[i]:set('ppqn', 16)
-
-  --lenlfoz[i] = lfoz.new() lenlfoz[i]:set('shape', 'saw') lenlfoz[i]:set('min', 0.0) lenlfoz[i]:set('max', 1.0)
-  --lenlfoz[i]:set('depth', 1.0) lenlfoz[i]:set('mode', 'clocked') lenlfoz[i]:set('period', 2) lenlfoz[i]:set('ppqn', 48)
-  --lenlfoz[i]:set('action', function(scld,raw) params:set("V"..i.."_Len",util.round(raw,0.015625)) end)
   
   lenlfoz[i] = lfoz.new('saw',0.0,1.0,1.0,'clocked',2,function(scld,raw) params:set("V"..i.."_Len",util.round(scld,0.0078125)) end)
   lenlfoz[i]:set('ppqn', 24)
@@ -51,6 +47,7 @@ function Voic:new(num)
   local v = setmetatable({}, { __index = Voic })
   v.num=num  v.mde=1 v.spd=1 v.vol=1 v.bar=8 v.looplay=0 v.busy=0 v.lpcount=1 v.prerec=0 v.pl=0 v.rc=0 v.pfreez=0 v.pg=0
   v.lpno=1 v.ofst=0 v.tixx=1 v.prvstp=0 v.plf=0 v.llf=0 v.slf=0 v.flf=0 v.clf=0 v.qlf=0 v.ctf=1000 v.rq=10
+  v.fdri=1 v.flop=0 v.fhip=0 v.fbnp=0 v.fbnr=0
   v.strt={delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58,delmap(num)+58} 
   v.ennd={delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116,delmap(num)+116} 
   softcut.enable(v.num,1) softcut.buffer(v.num,((v.num-1)%2)+1) softcut.loop(v.num,1) --setup softcut
@@ -130,11 +127,21 @@ end
 
 function Voic:speed(spd) self.spd = spd softcut.rate(self.num,self.spd) end
 
+function Voic:gain(vol) self.vol = vol softcut.level(self.num,self.vol) end
+
 function Voic:cutoff(ctoff) self.ctf = ctoff softcut.post_filter_fc(self.num,self.ctf) end
 
 function Voic:bndwidth(rq) self.rq = rq softcut.post_filter_rq(self.num,self.rq) end
 
-function Voic:gain(vol) self.vol = vol softcut.level(self.num,self.vol) end
+function Voic:fdry(vol) self.fdri = vol softcut.post_filter_dry(self.num,self.fdri) end
+
+function Voic:flowp(vol) self.flop = vol softcut.post_filter_lp(self.num,self.flop) end
+
+function Voic:fhighp(vol) self.fhip = vol softcut.post_filter_hp(self.num,self.fhip) end
+
+function Voic:fbandp(vol) self.fbnp = vol softcut.post_filter_bp(self.num,self.fbnp) end
+
+function Voic:fbandr(vol) self.fbnr = vol softcut.post_filter_br(self.num,self.fbnr) end
 
 function Voic:poslfo(stat) self.plf = util.wrap(stat,1,7)
                 if self.plf == 1 then poslfoz[self.num]:stop()
@@ -205,46 +212,46 @@ end
 function Voic:inputselect(inz, itbl)
   local itabl = itbl
   if inz==1 then
-    audio.level_eng_cut(1) audio.level_adc_cut(0) 
-    softcut.level_cut_cut(itabl[1],self.num,0.0) softcut.level_cut_cut(itabl[2],self.num,0.0)
-    softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
-    softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==2 then
     audio.level_eng_cut(0) audio.level_adc_cut(1) 
     softcut.level_input_cut(1,self.num,1.4) softcut.level_input_cut(2,self.num,0.0)
     softcut.level_cut_cut(itabl[1],self.num,0.0) softcut.level_cut_cut(itabl[2],self.num,0.0)
     softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==3 then
+  elseif inz==2 then
     audio.level_eng_cut(0) audio.level_adc_cut(1) 
     softcut.level_input_cut(2,self.num,1.4) softcut.level_input_cut(1,self.num,0.0)
     softcut.level_cut_cut(itabl[1],self.num,0.0) softcut.level_cut_cut(itabl[2],self.num,0.0)
     softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==4 then
+  elseif inz==3 then
     audio.level_eng_cut(0) audio.level_adc_cut(0) 
     softcut.level_cut_cut(itabl[1],self.num,1.0) softcut.level_cut_cut(itabl[2],self.num,0.0)
     softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==5 then
+  elseif inz==4 then
     audio.level_eng_cut(0) audio.level_adc_cut(0) 
     softcut.level_cut_cut(itabl[2],self.num,1.0) softcut.level_cut_cut(itabl[1],self.num,0.0)
     softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==6 then
+  elseif inz==5 then
     audio.level_eng_cut(0) audio.level_adc_cut(0) 
     softcut.level_cut_cut(itabl[3],self.num,1.0) softcut.level_cut_cut(itabl[1],self.num,0.0)
     softcut.level_cut_cut(itabl[2],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0)
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==7 then
+  elseif inz==6 then
     audio.level_eng_cut(0) audio.level_adc_cut(0) 
     softcut.level_cut_cut(itabl[4],self.num,1.0) softcut.level_cut_cut(itabl[1],self.num,0.0)
     softcut.level_cut_cut(itabl[2],self.num,0.0) softcut.level_cut_cut(itabl[3],self.num,0.0)
     softcut.level_cut_cut(itabl[5],self.num,0.0)
-  elseif inz==8 then
+  elseif inz==7 then
     audio.level_eng_cut(0) audio.level_adc_cut(0) 
     softcut.level_cut_cut(itabl[5],self.num,1.0) softcut.level_cut_cut(itabl[1],self.num,0.0)
     softcut.level_cut_cut(itabl[2],self.num,0.0) softcut.level_cut_cut(itabl[3],self.num,0.0) 
     softcut.level_cut_cut(itabl[4],self.num,0.0)
+  elseif inz==8 then
+    audio.level_eng_cut(1) audio.level_adc_cut(0) 
+    softcut.level_cut_cut(itabl[1],self.num,0.0) softcut.level_cut_cut(itabl[2],self.num,0.0)
+    softcut.level_cut_cut(itabl[3],self.num,0.0) softcut.level_cut_cut(itabl[4],self.num,0.0) 
+    softcut.level_cut_cut(itabl[5],self.num,0.0)
   end
 end
