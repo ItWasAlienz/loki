@@ -160,7 +160,7 @@ function enc(n,d)                         --ENCODERS--
           elseif lsel==12 then
             params:set("V"..vsel.."_CtOff",util.clamp(params:get("V"..vsel.."_CtOff")+d*5,20,20000))
           elseif lsel==13 then
-            params:set("V"..vsel.."_BndWdt",util.clamp(params:get("V"..vsel.."_BndWdt")+(d*0.1),0.5,14))
+            params:set("V"..vsel.."_BndWdt",util.clamp(params:get("V"..vsel.."_BndWdt")+(d*0.02),0.02,14))
           end
         else lfop = util.wrap(lfop+d,0,1)
         end
