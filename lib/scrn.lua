@@ -78,24 +78,24 @@ function softcutv(vs,hs)
   screen.font_size(7) screen.move(15,60) screen.text("Preset#")
   screen.font_size(8) screen.move(44,61) screen.text(vprenum) screen.aa(1)
   hilite(hs,1) mcs(26,2,26,2,0.5) hilite(hs,2) screen.rect(21,5,9,10) screen.move(23,13) screen.text(vs) 
-  mcs(35,11,35,11,0.5+(voices[vs].pfreez*0.5)) hilite(hs,3) 
-  if params:get("V"..vs.."_Mod")==3 then mcs(45,11,45,11,voices[vs].looplay+1) else mcs(45,11,45,11,params:get("V"..vs.."_Go")+1) end
-  screen.level(5) mcs(52,11,52,11,util.clamp(params:get("V"..vs.."_Rc")+voices[vs].rc,0,1) + 1)
+  mcs(35,11,35,11,0.5+(voices[vs].pfreez*0.5))  
+  screen.level(5) mcs(43,11,43,11,util.clamp(params:get("V"..vs.."_Rc")+voices[vs].rc,0,1) + 1) hilite(hs,3)
+  if params:get("V"..vs.."_Mod")==3 then mcs(51,11,51,11,voices[vs].looplay+1) else mcs(51,11,51,11,params:get("V"..vs.."_Go")+1) end
   screen.font_size(7) hilite(hs,4) screen.move(58,13) screen.aa(0) screen.text(params:string("V"..vs.."_In")) --input
   hilite(hs,5) screen.font_size(8) screen.move(69,14) screen.text(params:string("V"..vs.."_Mod")) hilite(hs,6) --mode
   screen.aa(1)
-  if(params:get("V"..vs.."_Mod")<3) then mcs(2,20,2,20,params:get("V"..vs.."_ALn")*0.5+0.5) --AmplitudePoll2Length
-  hilite(hs,7) mcs(2,24,2,24,params:get("V"..vs.."_PLn")*0.5+0.5) end --PtchPoll2Lngth
-  hilite(hs,8) screen.move(5,25) screen.font_size(7) screen.aa(0) --Length/Impatienz
-  if(params:get("V"..vs.."_Mod")<3) then mtmt(5,24,"Length:",40,24,params:get("V"..vs.."_Len"))
-  else mtmt(5,24,"Impatienz:",50,24,params:get("V"..vs.."_Impatnz")) end hilite(hs,9) 
+  if(params:get("V"..vs.."_Mod")<3) then mcs(2,21,2,21,params:get("V"..vs.."_ALn")*0.5+0.5) --AmplitudePoll2Length
+  hilite(hs,7) mcs(2,25,2,25,params:get("V"..vs.."_PLn")*0.5+0.5) end --PtchPoll2Lngth
+  hilite(hs,8) screen.move(5,27) screen.font_size(7) screen.aa(0) --Length/Impatienz
+  if(params:get("V"..vs.."_Mod")<3) then mtmt(5,26,"Length:",40,26,params:get("V"..vs.."_Len"))
+  else mtmt(5,26,"Impatienz:",50,26,params:get("V"..vs.."_Impatnz")) end hilite(hs,9) 
   if params:get("V"..vs.."_Mod")==3 then 
-    mtmt(5,32,"Lp#:",27,32,params:get("V"..vs.."_LpNum")) 
+    mtmt(5,34,"Lp#:",27,34,params:get("V"..vs.."_LpNum")) 
   elseif params:get("V"..vs.."_Mod")==1 then 
-    screen.aa(1) mcs(2,30,2,30,params:get("V"..vs.."_APs")*0.5+0.5) screen.aa(0) mtmt(5,32,"Phase:",40,32,params:get("V"..vs.."_Phase"))
+    screen.aa(1) mcs(2,32,2,32,params:get("V"..vs.."_APs")*0.5+0.5) screen.aa(0) mtmt(5,34,"Phase:",40,34,params:get("V"..vs.."_Phase"))
   end 
-  hilite(hs,10) mtmt(5,40,"FdBk:",27,40,params:get("V"..vs.."_Fbk"))
-  hilite(hs,11) screen.aa(1) mcs(2,45,2,45,params:get("V"..vs.."_ASp")*0.5+0.5) screen.aa(0) mtmt(5,48,"Speed:",35,48,params:get("V"..vs.."_Spd"))
+  hilite(hs,10) mtmt(5,42,"FdBk:",27,42,params:get("V"..vs.."_Fbk"))
+  hilite(hs,11) screen.aa(1) mcs(2,47,2,47,params:get("V"..vs.."_ASp")*0.5+0.5) screen.aa(0) mtmt(5,50,"Speed:",35,50,params:get("V"..vs.."_Spd"))
   hilite(hs,12) mtmt(69,26,"Pan:",88,26,params:get("V"..vs.."_Pn"))
   hilite(hs,13) mtmt(69,35,"Vol:",85,35,params:get("V"..vs.."_Vol"))
   hilite(hs,14) mtmt(60,44,"Btz/Cyc:",60,44,"") screen.aa(1) screen.font_size(11) screen.move(72,58) screen.font_face(24)
@@ -143,30 +143,30 @@ function lfopag(ls,ps,vs)
   for i=1,6 do
     screen.move((i*16)-14, 57)
     if i==1 then 
-       if ls==1 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_PLFMax"))
+       if ls==1 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_PLFMax"),20)
     elseif i==2 then 
-       if ls==2 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_LLFMax"))
+       if ls==2 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_LLFMax"),20)
     elseif i==3 then 
-       if ls==3 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_SLFMax"))
+       if ls==3 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_SLFMax"),20)
     elseif i==4 then 
-       if ls==4 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_FLFMax"))
+       if ls==4 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_FLFMax"),20)
     elseif i==5 then
-       if ls==5 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_CLFMax"))
-    else if ls==6 and psel==3 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_QLFMax")) end
+       if ls==5 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_CLFMax"),20)
+    else if ls==6 and psel==3 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_QLFMax"),20) end
   end
   for i=1,6 do
     screen.move((i*16)-14, 64)
     if i==1 then 
-       if ls==1 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_PLFMin"))
+       if ls==1 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_PLFMin"),20)
     elseif i==2 then 
-       if ls==2 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_LLFMin"))
+       if ls==2 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_LLFMin"),20)
     elseif i==3 then 
-       if ls==3 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_SLFMin"))
+       if ls==3 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_SLFMin"),20)
     elseif i==4 then 
-       if ls==4 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_FLFMin"))
+       if ls==4 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_FLFMin"),20)
     elseif i==5 then
-       if ls==5 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_CLFMin"))
-    else if ls==6 and psel==4 then screen.level(15) else screen.level(8) end screen.text(params:get("V"..i.."_QLFMin")) end
+       if ls==5 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_CLFMin"),20)
+    else if ls==6 and psel==4 then screen.level(15) else screen.level(8) end screen.text_trim(params:get("V"..vs.."_QLFMin"),20) end
   end
   for i=1,7 do
     screen.move(95, i*7 + 15) screen.font_size(6)
@@ -207,5 +207,5 @@ function lfopag(ls,ps,vs)
 end
 
 function mcs(x,y,cx,cy,cw) screen.move(x,y) screen.circle(cx,cy,cw) screen.stroke() end
-function mtmt(x,y,txt,a,b,xtx) screen.move(x,y) screen.text(txt) screen.move(a,b) screen.text(xtx) end
+function mtmt(x,y,txt,a,b,xtx) screen.move(x,y) screen.text(txt) screen.move(a,b) screen.text_trim(xtx,200) end
 function hilite(sl,cmp) if sl==cmp then screen.level(15) else screen.level(5) end end
